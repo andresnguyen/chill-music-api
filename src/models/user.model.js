@@ -29,27 +29,27 @@ const userSchema = new mongoose.Schema(
     gender: {
       type: String,
     },
-    favoriteSongIdList: {
+    favoriteSongList: {
       type: Array,
       default: [],
     },
-    playlistIdList: {
+    playlistList: {
       type: Array,
       default: [],
     },
-    albumIdList: {
+    albumList: {
       type: Array,
       default: [],
     },
-    recentSongIdList: {
+    recentSongList: {
       type: Array,
       default: [],
     },
-    songUploadIdList: {
+    songUploadList: {
       type: Array,
       default: [],
     },
-    followingArtistIdList: {
+    followingArtistList: {
       type: Array,
       default: [],
     },

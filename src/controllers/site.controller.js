@@ -4,7 +4,8 @@ import { pluralResponse } from '../constants/response.constant'
 class SiteController {
   async home(req, res, next) {
     try {
-      res.status(OK).json({ ...pluralResponse })
+      const data = await SiteService.getHomeData()
+      return res.status(OK).json({ ...pluralResponse, ...data })
     } catch (error) {
       next(error)
     }

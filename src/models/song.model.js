@@ -1,23 +1,29 @@
+import { formatSongList } from './formatSong'
+
 const mongoose = require('mongoose')
 
 const songSchema = new mongoose.Schema(
   {
+    id: {
+      type: Number,
+      required: true,
+    },
     name: {
       type: String,
       required: true,
     },
-    url: {
+    mediaUrl: {
       type: String,
       required: true,
     },
     imageUrl: {
       type: String,
     },
-    imageCoverUrl: {
+    bannerUrl: {
       type: String,
     },
-    genreList: {
-      type: Array,
+    genre: {
+      type: String,
     },
     artistList: {
       type: Array,
@@ -27,6 +33,10 @@ const songSchema = new mongoose.Schema(
       type: Number,
       min: 0,
       default: 0,
+    },
+    isDownloadable: {
+      type: Boolean,
+      default: true,
     },
     isActive: {
       type: Boolean,
@@ -43,3 +53,7 @@ const songSchema = new mongoose.Schema(
 )
 
 export default mongoose.model('Song', songSchema, 'songs')
+
+// const result = formatSongList()
+// mongoose.model('Song', songSchema, 'songs').insertMany(result)
+

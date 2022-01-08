@@ -4,9 +4,16 @@ const mongoose = require('mongoose')
 // lấy ra thì được, nhưng các thao tác (tạo, sửa, xóa) thì không được.
 const artistSchema = new mongoose.Schema(
   {
+    id: {
+      type: Number,
+      required: true,
+    },
     name: {
       type: String,
       required: true,
+    },
+    slug: {
+      type: String,
     },
     description: {
       type: String,
@@ -14,7 +21,7 @@ const artistSchema = new mongoose.Schema(
     avatarUrl: {
       type: String,
     },
-    imageCoverUrl: {
+    bannerUrl: {
       type: String,
     },
     genreList: {

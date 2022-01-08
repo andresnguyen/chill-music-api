@@ -2,6 +2,9 @@ const mongoose = require('mongoose')
 
 const albumSchema = new mongoose.Schema(
   {
+    id: {
+      type: Number,
+    },
     name: {
       type: String,
       required: true,
@@ -13,13 +16,27 @@ const albumSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    songIdList: {
+    songList: {
       type: Array,
-      required: true,
+      default: [],
     },
     artistList: {
       type: Array,
       required: true,
+    },
+    favoriteTotal: {
+      type: Number,
+    },
+    genre: {
+      type: String,
+    },
+    view: {
+      type: Number,
+      min: 0,
+      default: 0,
+    },
+    identify: {
+      type: String,
     },
     isActive: {
       type: Boolean,
