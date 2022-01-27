@@ -14,44 +14,20 @@ const userSchema = new mongoose.Schema(
       type: String,
       select: false,
     },
-    avatarUrl: {
-      type: String,
-    },
-    dateOfBirth: {
-      type: Date,
-    },
     facebookId: {
       type: String,
     },
     googleId: {
       type: String,
     },
-    gender: {
+    avatarURL: {
       type: String,
     },
-    favoriteSongList: {
-      type: Array,
-      default: [],
+    dateOfBirth: {
+      type: Date,
     },
-    playlistList: {
-      type: Array,
-      default: [],
-    },
-    albumList: {
-      type: Array,
-      default: [],
-    },
-    recentSongList: {
-      type: Array,
-      default: [],
-    },
-    songUploadList: {
-      type: Array,
-      default: [],
-    },
-    followingArtistList: {
-      type: Array,
-      default: [],
+    gender: {
+      type: Number,
     },
     role: {
       type: Number,
@@ -71,16 +47,4 @@ const userSchema = new mongoose.Schema(
   }
 )
 
-userSchema.pre('save', async function hashPassword(next) {
-  try {
-    const user = this
-    if (user.isModified('password')) {
-      user.password = await encodePassword(user.password)
-    }
-    next()
-  } catch (error) {
-    next(error)
-  }
-})
-
-export default mongoose.model('user', userSchema, 'users')
+export default mongoose.model('user', userSchema, 'user')

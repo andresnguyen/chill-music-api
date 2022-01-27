@@ -1,3 +1,4 @@
+
 const mongoose = require('mongoose')
 
 // nếu ở schema không có một thuộc tính bất kì, nhưng ở trên db thì có sẽ
@@ -6,26 +7,33 @@ const artistSchema = new mongoose.Schema(
   {
     id: {
       type: Number,
-      required: true,
     },
-    name: {
+    fullName: {
       type: String,
-      required: true,
     },
     slug: {
       type: String,
     },
+    avatarURL: {
+      type: String,
+    },
+    bannerURL: {
+      type: String,
+    },
     description: {
       type: String,
+      default: null,
     },
-    avatarUrl: {
+    dateOfBirth: {
+      type: Date,
+      default: null,
+    },
+    gender: {
+      type: Number,
+      default: null,
+    },
+    categoryId: {
       type: String,
-    },
-    bannerUrl: {
-      type: String,
-    },
-    genreList: {
-      type: Array,
     },
     isActive: {
       type: Boolean,
@@ -41,4 +49,4 @@ const artistSchema = new mongoose.Schema(
   }
 )
 
-export default mongoose.model('artist', artistSchema, 'artists')
+export default mongoose.model('artist', artistSchema, 'artist')

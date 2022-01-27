@@ -53,6 +53,15 @@ class SongController {
       })
     }
   }
+
+  async getSongFromArray(req, res, next) {
+    try {
+      const data = await SongService.getSongFromArray(req.query)
+      res.status(OK).json({ ...pluralResponse, data })
+    } catch (error) {
+      next(error)
+    }
+  }
 }
 
 export default new SongController()

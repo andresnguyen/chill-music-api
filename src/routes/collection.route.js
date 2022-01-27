@@ -10,7 +10,6 @@ router.delete('/favorite-songs/:songId', CollectionController.deleteFavoriteSong
 
 // PLAYLIST
 router.get('/playlists', CollectionController.getPlaylistList)
-router.get('/playlists/:playlistId', CollectionController.getPlaylistById)
 router.post('/playlists', CollectionController.createPlaylist)
 router.patch('/playlists/:playlistId', CollectionController.updatePlaylist)
 router.delete('/playlists/:playlistId', CollectionController.deletePlaylist)
@@ -18,7 +17,7 @@ router.delete('/playlists/:playlistId', CollectionController.deletePlaylist)
 router.post('/playlists/:playlistId/add', CollectionController.addSongToPlaylist)
 router.delete('/playlists/:playlistId/delete', CollectionController.deleteSongFromPlaylist)
 
-// ALBUMS
+// ALBUMS 
 router.get('/albums', CollectionController.getAlbumList)
 router.get('/albums/:albumId', CollectionController.getAlbumById)
 router.post('/albums', CollectionController.addAlbumToCollection)
@@ -32,7 +31,6 @@ router.delete('/artists/:artistId', CollectionController.deleteArtistFromCollect
 // MY SONG
 router.get('/my-songs', CollectionController.getMySongList)
 router.post('/my-songs', fileUploader.single('file'), CollectionController.createMySong)
-
 router.delete('/my-songs/:songId', CollectionController.deleteMySong)
 
 export default router

@@ -11,6 +11,7 @@ router.get(
     scope: ['email', 'user_birthday', 'user_gender', 'public_profile'],
   })
 )
+
 router.get(
   '/facebook/callback',
   passportFacebook.authenticate('facebook', { session: false }),
@@ -37,5 +38,9 @@ router.get(
 router.post('/login', passportLocal.authenticate('local', { session: false }), AuthController.logIn)
 
 router.post('/register', AuthController.register)
+
+router.post('/forgotten-password', AuthController.forgottenPassword)
+
+router.post('/change-password', AuthController.changePassword)
 
 export default router

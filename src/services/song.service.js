@@ -2,10 +2,10 @@ import Song from '../models/song.model'
 import createError from 'http-errors'
 
 class SongService {
-  async getAll({ page = 0, limit = 20, q = '', category }) {
+  async getAll({ page = 0, limit = 20, q = '', categoryId }) {
     page = Number.parseInt(page)
     limit = Number.parseInt(limit)
-    const query = q ? { name: new RegExp(q, 'i'), category } : {}
+    const query = q ? { name: new RegExp(q, 'i'), categoryId } : {}
     try {
       const data = await Song.find(query)
         .skip(page * limit)
@@ -77,6 +77,16 @@ class SongService {
 
       result.isDelete = 1
       return await result.save()
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async getSongFromArray({ songIds }) {
+    try {
+      const songIdList = JSON.parse(songIds)
+      const result = await Song.find({}).where('_id').in(songIdList)
+      return result
     } catch (error) {
       throw error
     }

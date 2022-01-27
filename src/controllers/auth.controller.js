@@ -23,6 +23,24 @@ class AuthController {
       next(error)
     }
   }
+
+  async forgottenPassword(req, res, next) {
+    try {
+      const data = await AuthService.forgottenPassword(req.body)
+      res.status(OK).json({ ...singleResponse, data })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async changePassword(req, res, next) {
+    try {
+      const data = await AuthService.changePassword(req.body)
+      res.status(OK).json({ ...singleResponse, data })
+    } catch (error) {
+      next(error)
+    }
+  }
 }
 
 export default new AuthController()

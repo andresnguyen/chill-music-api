@@ -7,27 +7,18 @@ const playlistSchema = new mongoose.Schema(
     },
     name: {
       type: String,
-      required: true,
     },
     description: {
       type: String,
-    },
-    imageUrl: {
-      type: String,
-      required: true,
     },
     songList: {
       type: Array,
       default: [],
     },
-    artistList: {
-      type: Array,
-      required: true,
+    imageURL: {
+      type: String,
     },
-    favoriteTotal: {
-      type: Number,
-    },
-    genre: {
+    bannerURL: {
       type: String,
     },
     view: {
@@ -35,7 +26,7 @@ const playlistSchema = new mongoose.Schema(
       min: 0,
       default: 0,
     },
-    identify: {
+    userId: {
       type: String,
     },
     isActive: {
@@ -52,4 +43,4 @@ const playlistSchema = new mongoose.Schema(
   }
 )
 
-export default mongoose.model('playlist', playlistSchema, 'playlists')
+export default mongoose.model('playlist', playlistSchema, 'playlist')

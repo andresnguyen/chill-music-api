@@ -1,3 +1,4 @@
+
 const mongoose = require('mongoose')
 
 const albumSchema = new mongoose.Schema(
@@ -7,36 +8,39 @@ const albumSchema = new mongoose.Schema(
     },
     name: {
       type: String,
-      required: true,
     },
     description: {
       type: String,
+      default: null,
     },
-    imageUrl: {
+    imageURL: {
       type: String,
-      required: true,
+      default: null,
+    },
+    bannerURL: {
+      type: String,
+      default: null,
     },
     songList: {
       type: Array,
       default: [],
-    },
-    artistList: {
-      type: Array,
-      required: true,
-    },
-    favoriteTotal: {
-      type: Number,
-    },
-    genre: {
-      type: String,
     },
     view: {
       type: Number,
       min: 0,
       default: 0,
     },
-    identify: {
+    userId: {
       type: String,
+      default: null,
+    },
+    artistId: {
+      type: String,
+      default: null,
+    },
+    categoryId: {
+      type: String,
+      default: null,
     },
     isActive: {
       type: Boolean,
@@ -52,4 +56,5 @@ const albumSchema = new mongoose.Schema(
   }
 )
 
-export default mongoose.model('album', albumSchema, 'albums')
+export default mongoose.model('album', albumSchema, 'album')
+

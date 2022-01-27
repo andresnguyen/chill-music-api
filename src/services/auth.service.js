@@ -27,6 +27,22 @@ class AuthService {
       throw error
     }
   }
+
+  async forgottenPassword(data) {
+    try {
+      return 'forgottenPassword'
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async changePassword(data) {
+    try {
+      return 'Change password'
+    } catch (error) {
+      throw error
+    }
+  }
 }
 
 export default new AuthService()

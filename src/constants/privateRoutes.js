@@ -1,3 +1,3 @@
-const privateRoutes = ['/collection']
+const privateRoutes = ['/collections']
 
 export default privateRoutes

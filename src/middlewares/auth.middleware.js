@@ -1,8 +1,8 @@
-import { verifyAccessToken } from '../utils/auth'
-import User from '../models/user.model'
-import privateRoutes from '../constants/privateRoutes'
-import { FORBIDDEN, UNAUTHORIZED } from '../constants/httpStatusCode.constant'
 import createError from 'http-errors'
+import { UNAUTHORIZED } from '../constants/httpStatusCode.constant'
+import privateRoutes from '../constants/privateRoutes'
+import User from '../models/user.model'
+import { verifyAccessToken } from '../utils/auth'
 
 class AuthMiddleware {
   async verifyUser(req, res, next) {
@@ -27,6 +27,8 @@ class AuthMiddleware {
       req.user = user
       next()
     } catch (error) {
+      next()
+      return
       privateRoutes.forEach((privateRoute) => {
         if (req.originalUrl.indexOf(privateRoute) === 4) {
           error.status = error.status || UNAUTHORIZED
@@ -34,7 +36,6 @@ class AuthMiddleware {
           return
         }
       })
-      next()
     }
   }
 

@@ -1,13 +1,11 @@
 import { OK } from '../constants/httpStatusCode.constant'
 import { pluralResponse, singleResponse } from '../constants/response.constant'
-import AlbumService from '../services/album.service'
-import AlbumService1 from '../models/category.model'
+import CategoryService from '../services/category.service'
 
-
-class AlbumController {
+class CategoryController {
   async getAll(req, res, next) {
     try {
-      const data = await AlbumService.getAll(req.query)
+      const data = await CategoryService.getAll(req.query)
       return res.status(OK).json({ ...pluralResponse, ...data })
     } catch (error) {
       next(error)
@@ -17,7 +15,7 @@ class AlbumController {
   async getById(req, res, next) {
     const id = req.params.id
     try {
-      const data = await AlbumService.getById(id)
+      const data = await CategoryService.getById(id)
       return res.status(OK).json({ ...singleResponse, data })
     } catch (error) {
       next(error)
@@ -26,7 +24,7 @@ class AlbumController {
 
   async create(req, res, next) {
     try {
-      const data = await AlbumService.create(req.body)
+      const data = await CategoryService.create(req.body)
       res.status(OK).json({ ...singleResponse, data })
     } catch (error) {
       next(error)
@@ -36,7 +34,7 @@ class AlbumController {
   async update(req, res, next) {
     const id = req.params.id
     try {
-      const data = await AlbumService.update(id, req.body)
+      const data = await CategoryService.update(id, req.body)
       res.status(OK).json({ ...singleResponse, data })
     } catch (error) {
       next(error)
@@ -46,7 +44,7 @@ class AlbumController {
   async delete(req, res, next) {
     const id = req.params.id
     try {
-      const data = await AlbumService.findByIdAndDelete(id)
+      const data = await CategoryService.delete(id)
       res.status(OK).json({ ...singleResponse, data })
     } catch (error) {
       next(error)
@@ -54,4 +52,4 @@ class AlbumController {
   }
 }
 
-export default new AlbumController()
+export default new CategoryController()
