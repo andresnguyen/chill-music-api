@@ -17,8 +17,7 @@ function route(app) {
   app.use('/v1/albums', albumRoute)
   app.use('/v1/artists', artistRoute)
   app.use('/v1/categories', categoryRoute)
-
-  app.use('/v1/', siteRoute)
+  app.use('/v1', siteRoute)
 }
 
 export default route

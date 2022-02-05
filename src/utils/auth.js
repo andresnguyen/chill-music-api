@@ -25,3 +25,18 @@ export const verifyAccessToken = async (token) => {
   const { id } = await jwt.verify(token, ACCESS_TOKEN_SECRET)
   return id
 }
+
+const FAKE_USER = {
+  _id: '61f7425137ba5ea95f3af7cf',
+  avatarURL: 'https://chill-music-webapp.vercel.app/static/media/avatar.462af2608b38b7d05a2b.jpg',
+  role: 2,
+  isActive: true,
+  isDelete: false,
+  email: 'thuongnguyen.it78@gmail.com',
+  dateOfBirth: '1999-07-07T17:00:00.000Z',
+  fullName: 'Thuong Nguyen',
+  gender: 1,
+  createdAt: '2022-01-31T01:58:41.020Z',
+  updatedAt: '2022-01-31T01:58:41.020Z',
+  __v: 0,
+}
