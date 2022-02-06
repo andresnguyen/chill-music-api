@@ -35,6 +35,10 @@ class SiteService {
       throw error
     }
   }
+
+  async personal() {
+    
+  }
 }
 
 export default new SiteService()

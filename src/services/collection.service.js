@@ -3,49 +3,55 @@ import User from '../models/user.model'
 import Artist from '../models/artist.model'
 import Playlist from '../models/playlist.model'
 import Song from '../models/song.model'
+
+import FavoriteSong from '../models/favorite-song.model'
+import FavoriteAlbum from '../models/favorite-album.model'
+import FavoritePlaylist from '../models/favorite-playlist.model'
+import FavoriteArtist from '../models/favorite-artist.model'
+
+import SongService from './song.service'
+import AlbumService from './album.service'
+import ArtistService from './artist.service'
+
 import createError from 'http-errors'
 
 class CollectionService {
+
   // FAVORITE SONG ===========================================
 
-  async getFavoriteSongList(userId) {
+  async getFavoriteSongList(user) {
     try {
-      const user = await User.findById(userId)
-      const favoriteSongList = await Song.find({
-        _id: { $in: user.favoriteSongIdList },
+      const favoriteSongList = await FavoriteSong.find({
+        userId: user._id,
       })
-      return favoriteSongList
+
+      const result = await SongService.getSongFromArray(
+        favoriteSongList.map((favoriteSong) => favoriteSong.songId)
+      )
+      return result
     } catch (error) {
       throw error
     }
   }
 
-  async createFavoriteSong(userId, songId) {
+  async createFavoriteSong(user, songId) {
     try {
-      const user = await User.findById(userId)
-      if (user.favoriteSongIdList.includes(songId)) {
+      if (await FavoriteSong.findOne({ songId: songId })) {
         throw new createError.BadRequest('This song exists in your favorite song list')
       }
-
-      user.favoriteSongIdList.unshift(songId)
-      await user.save()
+      await new FavoriteSong({ songId: songId, userId: user._id }).save()
       return true
     } catch (error) {
       throw error
     }
   }
 
-  async deleteFavoriteSong(userId, songId) {
+  async deleteFavoriteSong(user, songId) {
     try {
-      const user = await User.findById(userId)
-      if (!user.favoriteSongIdList.includes(songId)) {
-        throw new createError.BadRequest('This song does not exist in your favorite song list')
+      const favoriteSong = await FavoriteSong.findOneAndDelete({ songId: songId, userId: user._id })
+      if (!favoriteSong) {
+        throw new createError.BadRequest('This song does not exists in your favorite song list')
       }
-
-      user.favoriteSongIdList = user.favoriteSongIdList.filter(
-        (favoriteSongId) => favoriteSongId !== songId
-      )
-      await user.save()
       return true
     } catch (error) {
       throw error
@@ -54,11 +60,14 @@ class CollectionService {
 
   // PLAYLIST ============================================
 
-  async getPlaylistList(userId) {
+  async getFavoritePlaylistList(user) {
     try {
-      const user = await User.findById(userId)
+      const favoritePlaylistList = await FavoritePlaylist.find({
+        userId: user._id,
+      })
+
       const playlistList = await Playlist.find({
-        _id: { $in: user.playlistIdList },
+        _id: { $in: favoritePlaylistList.map((favoritePlaylist) => favoritePlaylist.playlistId) },
       })
       return playlistList
     } catch (error) {
@@ -66,81 +75,157 @@ class CollectionService {
     }
   }
 
+  async addPlaylistToFavorite(user, playlistId) {
+    try {
+      if (!(await Playlist.findById(playlistId))) {
+        throw new createError.BadRequest('This playlist does not exists')
+      }
+
+      if (await PlaylistFavorite.findOne({ userId: user._id, playlistId })) {
+        throw new createError.BadRequest('This playlist exists in your playlist list')
+      }
+
+      await new PlaylistFavorite({
+        userId: user._id,
+        playlistId,
+      }).save()
+
+      return true
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async deletePlaylistFromCollection(user, playlistId) {
+    try {
+      const playlistFavorite = PlaylistFavorite.findOneAndDelete({
+        userId: user._id,
+        playlistId,
+      })
+      if (!playlistFavorite) {
+        throw new createError.BadRequest('This playlist does not exist in your album list')
+      }
+
+      return true
+    } catch (error) {
+      throw error
+    }
+  }
+
+  // v
+  async getPlaylistList(user) {
+    try {
+      const playlistList = await Playlist.find({
+        userId: user._id,
+      })
+
+      return playlistList
+    } catch (error) {
+      throw error
+    }
+  }
+
+  // v
   async getPlaylistById(playlistId) {
     try {
       const playlist = await Playlist.findById(playlistId)
+      const [songList] = await Promise.all([SongService.getSongFromArray(playlist.songList)])
+      return { ...playlist, songList }
+    } catch (error) {
+      throw error
+    }
+  }
+
+  // v
+  async createPlaylist(user, newPlaylist) {
+    try {
+      const playlist = await new Playlist({ ...newPlaylist, userId: user._id }).save()
       return playlist
     } catch (error) {
       throw error
     }
   }
 
-  async createPlaylist(userId, newPlaylist) {
+  // v
+  async updatePlaylist(user, playlistId, updatePlaylist) {
     try {
-      const user = await User.findById(userId)
-      const playlist = await new Playlist({ ...newPlaylist }).save()
-      user.playlistIdList.unshift(playlist._id)
-      await user.save()
-      return playlist
-    } catch (error) {
-      throw error
-    }
-  }
-
-  async updatePlaylist(playlistId, updatePlaylist) {
-    try {
-      const playlist = await Playlist.findByIdAndUpdate(playlistId, updatePlaylist, {
-        new: true,
-      })
-      return playlist
-    } catch (error) {
-      throw error
-    }
-  }
-
-  async deletePlaylist(userId, playlistId) {
-    try {
-      const user = await User.findById(userId)
-      if (!user.playlistIdList.includes(playlistId)) {
-        throw new createError.BadRequest(`Playlist not exists in current user's playlist`)
-      }
-
-      user.playlistIdList = user.playlistIdList.filter(
-        (playlistIdItem) => playlistIdItem !== playlistId
+      const playlist = await Playlist.findOneAndUpdate(
+        {
+          userId: user._id,
+          _id: playlistId,
+        },
+        updatePlaylist,
+        {
+          new: true,
+        }
       )
-      await user.save()
-      await Playlist.findByIdAndUpdate(playlistId, { isDelete: 1 })
-      return true
+
+      if (!playlist) {
+        throw new createError.BadRequest(
+          `Playlist not exists in current user's playlist or playlist is invalid`
+        )
+      }
+      return playlist
     } catch (error) {
       throw error
     }
   }
 
-  async addSongToPlaylist(userId, playlistId, songId) {
+  // v
+  async deletePlaylist(user, playlistId) {
     try {
-      const playlist = await Playlist.findById(playlistId)
-      if (playlist.songIdList.includes(songId)) {
-        throw new createError.BadRequest('This song exists in the playlist')
+      const playlist = await Playlist.findOneAndDelete({ userId: user._id, _id: playlistId })
+      if (!playlist) {
+        throw new createError.BadRequest(
+          `Playlist not exists in current user's playlist or playlist is invalid`
+        )
       }
 
-      playlist.songIdList.unshift(songId)
-      await playlist.save()
       return true
     } catch (error) {
       throw error
     }
   }
 
-  async deleteSongFromPlaylist(userId, playlistId, songId) {
+  // v
+  async addSongToPlaylist(user, playlistId, songId) {
     try {
-      const playlist = await Playlist.findById(playlistId)
-      if (!playlist.songIdList.includes(songId)) {
+      const playlist = await Playlist.findOne({ _id: playlistId, userId: user._id })
+      if (!playlist) {
+        throw new createError.BadRequest('The playlist is not exists')
+      }
+
+      if (!(await Song.findById(songId))) {
+        throw new createError.BadRequest('The song is not exists')
+      }
+
+      if (playlist.songList.includes(songId)) {
+        throw new createError.BadRequest('The song exists in the playlist')
+      }
+
+      playlist.songList.unshift(songId)
+      await playlist.save()
+      return playlist
+    } catch (error) {
+      throw error
+    }
+  }
+
+  // v
+  async deleteSongFromPlaylist(user, playlistId, songId) {
+    try {
+      const playlist = await Playlist.findOne({ _id: playlistId, userId: user._id })
+      if (!playlist) {
+        throw new createError.BadRequest('The playlist is not exists')
+      }
+
+      if (!playlist.songList.includes(songId)) {
         throw new createError.BadRequest('This song does not exist in the playlist')
       }
 
-      playlist.songIdList = playlist.songIdList.filter((songIdItem) => songIdItem !== songId)
+      playlist.songList = playlist.songList.filter((songItem) => songItem !== songId)
       await playlist.save()
-      return true
+      return playlist
     } catch (error) {
       throw error
     }
@@ -148,51 +233,53 @@ class CollectionService {
 
   // ALBUMS=============================================
 
-  async getAlbumList(userId) {
+  // v
+  async getFavoriteAlbum(user) {
     try {
-      const user = await User.findById(userId)
-      const albumList = await Album.find({
-        _id: { $in: user.albumIdList },
+      const favoriteAlbumList = await FavoriteAlbum.find({
+        userId: user._id,
       })
-      return albumList
+
+      const playlistList = await AlbumService.getSongFromArray(
+        favoriteAlbumList.map((favoriteAlbum) => favoriteAlbum.albumId)
+      )
+      return playlistList
     } catch (error) {
       throw error
     }
   }
 
-  async getAlbumById(userId, albumId) {
+  async addAlbumToFavorite(user, albumId) {
     try {
-      const album = await Album.findById(albumId)
-      return album
-    } catch (error) {
-      throw error
-    }
-  }
-
-  async addAlbumToCollection(userId, albumId) {
-    try {
-      const user = await User.findById(userId)
-      if (user.albumIdList.includes(albumId)) {
+      if (!(await Album.findById(albumId))) {
         throw new createError.BadRequest('This album exists in your album list')
       }
 
-      user.albumIdList.unshift(albumId)
-      await user.save()
+      if (await FavoriteAlbum.findOne({ userId: user._id, albumId })) {
+        throw new createError.BadRequest('This album exists in your album list')
+      }
+
+      await new FavoriteAlbum({
+        userId: user._id,
+        albumId,
+      }).save()
+
       return true
     } catch (error) {
       throw error
     }
   }
 
-  async deleteAlbumFromCollection(userId, albumId) {
+  async deleteAlbumFromFavorite(user, albumId) {
     try {
-      const user = await User.findById(userId)
-      if (!user.albumIdList.includes(albumId)) {
+      const favoriteAlbum = FavoriteAlbum.findOneAndDelete({
+        userId: user._id,
+        albumId,
+      })
+      if (!favoriteAlbum) {
         throw new createError.BadRequest('This album does not exist in your album list')
       }
 
-      user.albumIdList = user.albumIdList.filter((albumIdItem) => albumIdItem !== userId)
-      await user.save()
       return true
     } catch (error) {
       throw error
@@ -201,36 +288,53 @@ class CollectionService {
 
   // ARTIST==============================================
 
-  async getArtistList(userId) {
+  async getFavoriteArtistList(user) {
     try {
-      const user = await User.findById(userId)
-      const artistList = await Artist.find({
-        _id: { $in: user.followingArtistIdList },
+      const favoriteArtistList = await FavoriteArtist.find({
+        userId: user._id,
       })
+
+      const artistList = await ArtistService.getArtistFromArray(
+        favoriteArtistList.map((favoriteArtist) => favoriteArtist.artistId)
+      )
       return artistList
     } catch (error) {
       throw error
     }
   }
 
-  async addArtistToCollection(userId, artistId) {
+  async addArtistToFavorite(user, artistId) {
     try {
-      const user = await User.findById(userId)
-      user.followingArtistIdList.unshift(artistId)
-      await user.save()
+      if (!(await Artist.findById(artistId))) {
+        throw new createError.BadRequest('This artist does not exists')
+      }
+
+      if (await FavoriteArtist.findOne({ userId: user._id, artistId })) {
+        throw new createError.BadRequest('This artist exists in your artist list')
+      }
+
+      await new FavoriteArtist({
+        userId: user._id,
+        artistId,
+      }).save()
+
       return true
     } catch (error) {
       throw error
     }
   }
 
-  async deleteArtistFromCollection(userId, artistId) {
+  async deleteArtistFromFavorite(user, artistId) {
     try {
-      const user = await User.findById(userId)
-      user.followingArtistIdList = user.followingArtistIdList.filter(
-        (followingArtistId) => followingArtistId !== artistId
-      )
-      await user.save()
+      const artistFavorite = await FavoriteArtist.findOneAndDelete({
+        userId: user._id,
+        artistId,
+      })
+
+      if (!artistFavorite) {
+        throw new createError.BadRequest('This artist does not exist in your album list')
+      }
+
       return true
     } catch (error) {
       throw error

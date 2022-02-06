@@ -74,6 +74,17 @@ class ArtistService {
       throw error
     }
   }
+
+  async getArtistFromArray(artistIdList) {
+    try {
+      const result = await Promise.all(
+        artistIdList.map(async (artistId) => await this.getById(artistId))
+      )
+      return result
+    } catch (error) {
+      throw error
+    }
+  }
 }
 
 export default new ArtistService()

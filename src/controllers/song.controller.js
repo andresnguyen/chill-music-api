@@ -56,7 +56,7 @@ class SongController {
 
   async getSongFromArray(req, res, next) {
     try {
-      const data = await SongService.getSongFromArray(req.query)
+      const data = await SongService.getSongFromArray(req.query.songIds)
       res.status(OK).json({ ...pluralResponse, data })
     } catch (error) {
       next(error)

@@ -7,8 +7,8 @@ class CollectionController {
 
   async getFavoriteSongList(req, res, next) {
     try {
-      const favoriteSongList = await CollectionService.getFavoriteSongList(req.user._id)
-      return res.status(OK).json({ ...pluralResponse, data: favoriteSongList })
+      const data = await CollectionService.getFavoriteSongList(req.user)
+      return res.status(OK).json({ ...pluralResponse, data })
     } catch (error) {
       next(error)
     }
@@ -16,8 +16,8 @@ class CollectionController {
 
   async createFavoriteSong(req, res, next) {
     try {
-      const songId = await CollectionService.createFavoriteSong(req.user._id, req.body.songId)
-      return res.status(OK).json({ ...singleResponse, data: songId })
+      const data = await CollectionService.createFavoriteSong(req.user, req.body.songId)
+      return res.status(OK).json({ ...singleResponse, data })
     } catch (error) {
       res.status(error.statusCode || INTERNAL_SERVER).json({
         ...failedResponse,
@@ -28,8 +28,8 @@ class CollectionController {
 
   async deleteFavoriteSong(req, res, next) {
     try {
-      const songId = await CollectionService.deleteFavoriteSong(req.user._id, req.params.songId)
-      res.status(OK).json({ ...singleResponse, data: songId })
+      const data = await CollectionService.deleteFavoriteSong(req.user, req.params.songId)
+      res.status(OK).json({ ...singleResponse, data })
     } catch (error) {
       next(error)
     }
@@ -39,8 +39,8 @@ class CollectionController {
 
   async getPlaylistList(req, res, next) {
     try {
-      const playlistList = await CollectionService.getPlaylistList(req.user._id)
-      return res.status(OK).json({ ...pluralResponse, data: playlistList })
+      const data = await CollectionService.getPlaylistList(req.user)
+      return res.status(OK).json({ ...pluralResponse, data })
     } catch (error) {
       next(error)
     }
@@ -48,8 +48,8 @@ class CollectionController {
 
   async getPlaylistById(req, res, next) {
     try {
-      const playlist = await CollectionService.getPlaylistById(req.params.playlistId)
-      return res.status(OK).json({ ...pluralResponse, data: playlist })
+      const data = await CollectionService.getPlaylistById(req.params.playlistId)
+      return res.status(OK).json({ ...pluralResponse, data })
     } catch (error) {
       next(error)
     }
@@ -57,18 +57,17 @@ class CollectionController {
 
   async createPlaylist(req, res, next) {
     try {
-      const playlist = await CollectionService.createPlaylist(req.user._id, req.body)
-      return res.status(OK).json({ ...singleResponse, data: playlist })
+      const data = await CollectionService.createPlaylist(req.user, req.body)
+      return res.status(OK).json({ ...singleResponse, data })
     } catch (error) {
       next(error)
     }
   }
 
   async updatePlaylist(req, res, next) {
-    const playlistId = req.params.playlistId
     try {
-      const album = await CollectionService.updatePlaylist(playlistId, req.body)
-      res.status(OK).json({ ...singleResponse, data: album })
+      const data = await CollectionService.updatePlaylist(req.user, req.params.playlistId, req.body)
+      res.status(OK).json({ ...singleResponse, data })
     } catch (error) {
       next(error)
     }
@@ -76,8 +75,8 @@ class CollectionController {
 
   async deletePlaylist(req, res, next) {
     try {
-      const playlist = await CollectionService.deletePlaylist(req.user._id, req.params.playlistId)
-      res.status(OK).json({ ...singleResponse, data: playlist })
+      const data = await CollectionService.deletePlaylist(req.user, req.params.playlistId)
+      res.status(OK).json({ ...singleResponse, data })
     } catch (error) {
       next(error)
     }
@@ -85,12 +84,12 @@ class CollectionController {
 
   async addSongToPlaylist(req, res, next) {
     try {
-      const result = await CollectionService.addSongToPlaylist(
-        req.user_id,
+      const data = await CollectionService.addSongToPlaylist(
+        req.user,
         req.params.playlistId,
         req.body.songId
       )
-      res.status(OK).json({ ...singleResponse, data: result })
+      res.status(OK).json({ ...singleResponse, data })
     } catch (error) {
       next(error)
     }
@@ -98,52 +97,70 @@ class CollectionController {
 
   async deleteSongFromPlaylist(req, res, next) {
     try {
-      const result = await CollectionService.deleteSongFromPlaylist(
-        req.user_id,
+      const data = await CollectionService.deleteSongFromPlaylist(
+        req.user,
         req.params.playlistId,
         req.body.songId
       )
-      res.status(OK).json({ ...singleResponse, data: result })
+      res.status(OK).json({ ...singleResponse, data })
     } catch (error) {
       next(error)
     }
   }
+
+  async getFavoritePlaylistList(req, res, next) {
+    try {
+      const data = await CollectionService.getFavoritePlaylistList(req.user)
+      res.status(OK).json({ ...singleResponse, data })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async addPlaylistToFavorite(req, res, next) {
+    try {
+      const data = await CollectionService.addPlaylistToFavorite(req.user, req.body.playlistId)
+      res.status(OK).json({ ...singleResponse, data })
+    } catch (error) {
+      next(error)
+    }
+  }
+  async deletePlaylistFromCollection(req, res, next) {
+    try {
+      const data = await CollectionService.deletePlaylistFromCollection(
+        req.user,
+        req.params.playlistId
+      )
+      res.status(OK).json({ ...singleResponse, data })
+    } catch (error) {
+      next(error)
+    }
+  }
+
   // ALBUMS =============================================
 
-  async getAlbumList(req, res, next) {
+  async getFavoriteAlbum(req, res, next) {
     try {
-      const albumList = await CollectionService.getAlbumList(req.user._id)
-      return res.status(OK).json({ ...pluralResponse, data: albumList })
+      const data = await CollectionService.getFavoriteAlbum(req.user)
+      return res.status(OK).json({ ...pluralResponse, data })
     } catch (error) {
       next(error)
     }
   }
 
-  async getAlbumById(req, res, next) {
+  async addAlbumToFavorite(req, res, next) {
     try {
-      const album = await CollectionService.getAlbumById(req.user._id, req.params.albumId)
-      return res.status(OK).json({ ...singleResponse, data: album })
+      const data = await CollectionService.addAlbumToFavorite(req.user, req.body.albumId)
+      return res.status(OK).json({ ...singleResponse, data })
     } catch (error) {
       next(error)
     }
   }
 
-  async addAlbumToCollection(req, res, next) {
+  async deleteAlbumFromFavorite(req, res, next) {
     try {
-      const result = await CollectionService.addAlbumToCollection(req.user._id, req.body.albumId)
-      return res.status(OK).json({ ...singleResponse, data: result })
-    } catch (error) {
-      next(error)
-    }
-  }
-
-  async deleteAlbumFromCollection(req, res, next) {
-    try {
-      const result = await CollectionService.deleteAlbumFromCollection(
-        req.user._id,
-        req.params.albumId
-      )
-      return res.status(OK).json({ ...singleResponse, data: result })
+      const data = await CollectionService.deleteAlbumFromFavorite(req.user, req.params.albumId)
+      return res.status(OK).json({ ...singleResponse, data })
     } catch (error) {
       next(error)
     }
@@ -151,31 +168,28 @@ class CollectionController {
 
   // ARTIST ==============================================
 
-  async getArtistList(req, res, next) {
+  async getFavoriteArtistList(req, res, next) {
     try {
-      const artistList = await CollectionService.getArtistList(req.user._id)
-      return res.status(OK).json({ ...pluralResponse, data: artistList })
+      const data = await CollectionService.getFavoriteArtistList(req.user)
+      return res.status(OK).json({ ...pluralResponse, data })
     } catch (error) {
       next(error)
     }
   }
 
-  async addArtistToCollection(req, res, next) {
+  async addArtistToFavorite(req, res, next) {
     try {
-      const result = await CollectionService.addArtistToCollection(req.user._id, req.body.artistId)
-      return res.status(OK).json({ ...singleResponse, data: result })
+      const data = await CollectionService.addArtistToFavorite(req.user, req.body.artistId)
+      return res.status(OK).json({ ...singleResponse, data })
     } catch (error) {
       next(error)
     }
   }
 
-  async deleteArtistFromCollection(req, res, next) {
+  async deleteArtistFromFavorite(req, res, next) {
     try {
-      const result = await CollectionService.deleteArtistFromCollection(
-        req.user._id,
-        req.params.artistId
-      )
-      return res.status(OK).json({ ...singleResponse, data: result })
+      const data = await CollectionService.deleteArtistFromFavorite(req.user, req.params.artistId)
+      return res.status(OK).json({ ...singleResponse, data })
     } catch (error) {
       next(error)
     }
@@ -185,7 +199,7 @@ class CollectionController {
 
   async getMySongList(req, res, next) {
     try {
-      const songUploadList = await CollectionService.getMySongList(req.user._id)
+      const songUploadList = await CollectionService.getMySongList(req.user)
       return res.status(OK).json({ ...pluralResponse, data: songUploadList })
     } catch (error) {
       next(error)

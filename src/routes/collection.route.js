@@ -17,16 +17,19 @@ router.delete('/playlists/:playlistId', CollectionController.deletePlaylist)
 router.post('/playlists/:playlistId/add', CollectionController.addSongToPlaylist)
 router.delete('/playlists/:playlistId/delete', CollectionController.deleteSongFromPlaylist)
 
+router.get('/favorite-playlists', CollectionController.getFavoritePlaylistList)
+router.post('/favorite-playlists', CollectionController.addPlaylistToFavorite)
+router.delete('/favorite-playlist/:playlistId', CollectionController.deletePlaylistFromCollection)
+
 // ALBUMS 
-router.get('/albums', CollectionController.getAlbumList)
-router.get('/albums/:albumId', CollectionController.getAlbumById)
-router.post('/albums', CollectionController.addAlbumToCollection)
-router.delete('/albums/:albumId', CollectionController.deleteAlbumFromCollection)
+router.get('/albums', CollectionController.getFavoriteAlbum)
+router.post('/albums', CollectionController.addAlbumToFavorite)
+router.delete('/albums/:albumId', CollectionController.deleteAlbumFromFavorite)
 
 // ARTIST
-router.get('/artists', CollectionController.getArtistList)
-router.post('/artists', CollectionController.addArtistToCollection)
-router.delete('/artists/:artistId', CollectionController.deleteArtistFromCollection)
+router.get('/artists', CollectionController.getFavoriteArtistList)
+router.post('/artists', CollectionController.addArtistToFavorite)
+router.delete('/artists/:artistId', CollectionController.deleteArtistFromFavorite)
 
 // MY SONG
 router.get('/my-songs', CollectionController.getMySongList)

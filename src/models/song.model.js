@@ -28,6 +28,10 @@ const songSchema = new mongoose.Schema(
       min: 0,
       default: 0,
     },
+    artistList: {
+      type: Array,
+      default: []
+    },
     categoryId: {
       type: String,
       default: null,

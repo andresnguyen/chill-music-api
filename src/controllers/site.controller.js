@@ -10,6 +10,15 @@ class SiteController {
       next(error)
     }
   }
+
+  async personal(req, res, next) {
+    try {
+      const data = await SiteService.personal()
+      return res.status(OK).json({ ...pluralResponse, data })
+    } catch (error) {
+      next(error)
+    }
+  }
 }
 
 export default new SiteController()

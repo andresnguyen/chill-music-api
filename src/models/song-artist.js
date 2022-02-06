@@ -22,4 +22,9 @@ const songAndArtistSchema = new mongoose.Schema(
   }
 )
 
+  
+
+// mongoose.model('artist', artistSchema, 'artist').insertMany(result)
+
+
 export default mongoose.model('song-artist', songAndArtistSchema, 'song-artist')

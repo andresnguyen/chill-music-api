@@ -1,7 +1,6 @@
 import { OK } from '../constants/httpStatusCode.constant'
 import { pluralResponse, singleResponse } from '../constants/response.constant'
 import AlbumService from '../services/album.service'
-import AlbumService1 from '../models/category.model'
 
 
 class AlbumController {

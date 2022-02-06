@@ -1,7 +1,6 @@
 import createError from 'http-errors'
 import { UNAUTHORIZED } from '../constants/httpStatusCode.constant'
 import privateRoutes from '../constants/privateRoutes'
-import User from '../models/user.model'
 import { verifyAccessToken } from '../utils/auth'
 
 class AuthMiddleware {
@@ -14,13 +13,13 @@ class AuthMiddleware {
         throw createError.Unauthorized('Token is empty')
       }
 
-      const { id } = await verifyAccessToken(token)
-      const user = await User.findById(id)
+      const user = await verifyAccessToken(token)
+
       if (!user) {
         throw createError.BadRequest("User doesn't exists")
       }
 
-      if (user.isActive) {
+      if (!user.isActive) {
         throw createError.NotAcceptable("User isn't active")
       }
 

@@ -1,4 +1,5 @@
 import Song from '../models/song.model'
+import Artist from '../models/artist.model'
 import createError from 'http-errors'
 
 class SongService {
@@ -19,8 +20,12 @@ class SongService {
 
   async getById(songId) {
     try {
-      const result = await Song.findById(songId)
-      return result
+      const result = await Song.findById(songId).lean()
+      const artistList = await Artist.find({ _id: { $in: result.artistList } })
+      return {
+        ...result,
+        artistList,
+      }
     } catch (error) {
       throw error
     }
@@ -82,10 +87,10 @@ class SongService {
     }
   }
 
-  async getSongFromArray({ songIds }) {
+  async getSongFromArray(songIdList) {
     try {
-      const songIdList = JSON.parse(songIds)
-      const result = await Song.find({}).where('_id').in(songIdList)
+      const result = await Promise.all(songIdList.map(async (songId) => await this.getById(songId)))
+      console.log(result);
       return result
     } catch (error) {
       throw error
