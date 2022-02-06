@@ -50,6 +50,16 @@ class ArtistController {
       next(error)
     }
   }
+
+  async getDetail(req, res, next) {
+    const id = req.params.id
+    try {
+      const data = await ArtistService.getDetail(id)
+      res.status(OK).json({ ...singleResponse, data })
+    } catch (error) {
+      next(error)
+    }
+  }
 }
 
 export default new ArtistController()

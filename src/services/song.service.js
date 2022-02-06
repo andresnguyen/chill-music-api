@@ -89,8 +89,35 @@ class SongService {
 
   async getSongFromArray(songIdList) {
     try {
-      const result = await Promise.all(songIdList.map(async (songId) => await this.getById(songId)))
-      console.log(result);
+      const result = await Promise.all(songIdList.map(async (songId) => await this.getById(songId.toString())))
+      return result
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async getSongByArtistID(artistId) {
+    try {
+      const songList = await Song.find({
+        artistList: artistId.toString(),
+      }).lean()
+
+      if(songList.length === 0) return []
+
+      const result = await this.getSongFromArray(songList.map((song) => song._id))
+      return result
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async getSongByQuery(query) {
+    try {
+      const songList = await Song.find(query).lean()
+
+      if(songList.length === 0) return []
+
+      const result = await this.getSongFromArray(songList.map((song) => song._id))
       return result
     } catch (error) {
       throw error

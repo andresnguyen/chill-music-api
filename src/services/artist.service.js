@@ -1,4 +1,7 @@
+import Album from '../models/album.model'
 import Artist from '../models/artist.model'
+import Category from '../models/category.model'
+import SongService from './song.service'
 
 class ArtistService {
   async getAll({ page = 0, limit = 20, q = '' }) {
@@ -20,6 +23,8 @@ class ArtistService {
   async getById(id) {
     try {
       const result = await Artist.findById(id).lean()
+      const category = await Category.findById(result.categoryId)
+      result.category = category
       return result
     } catch (error) {
       throw error
@@ -82,6 +87,32 @@ class ArtistService {
       )
       return result
     } catch (error) {
+      throw error
+    }
+  }
+
+  async getDetail(id) {
+    try {
+      const artist = await this.getById(id)
+
+      const [songList, albumList, artistList] = await Promise.all([
+        SongService.getSongByArtistID(artist._id.toString()),
+        Album.find({
+          artistId: artist._id.toString(),
+        }),
+        Artist.find({
+          categoryId: artist.categoryId,
+        }).limit(5),
+      ])
+
+      return {
+        ...artist,
+        songList,
+        albumList,
+        artistList,
+      }
+    } catch (error) {
+      console.log(error)
       throw error
     }
   }

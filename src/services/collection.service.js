@@ -16,7 +16,6 @@ import ArtistService from './artist.service'
 import createError from 'http-errors'
 
 class CollectionService {
-
   // FAVORITE SONG ===========================================
 
   async getFavoriteSongList(user) {
@@ -343,32 +342,24 @@ class CollectionService {
 
   // MY SONG===============================================
 
-  async getMySongList(userId) {
+  async getMySongList(user) {
     try {
-      const user = await User.findById(userId)
-      const songUploadList = await Song.find({
-        _id: { $in: user.songUploadIdList },
-      })
-      return songUploadList
+      const songList = await SongService.getSongByQuery({ userId: user._id })
+      return songList
     } catch (error) {
       throw error
     }
   }
 
-  async createMySong(userId, req) {
+  async createMySong(user, data) {
+    const { name, imageURL, mediaURL } = data
     try {
-      if (!req.file) {
-        throw new createError.BadRequest('No file uploaded')
-      }
-      const user = await User.findById(userId)
       const song = await new Song({
-        name: req.file.originalname,
-        download_url: req.file.path,
-        image_path: user.avatarUrl || 'null',
-        singer: [user._id],
+        name,
+        imageURL,
+        mediaURL,
+        userId: user._id.toString(),
       }).save()
-      user.songUploadIdList.unshift(song._id)
-      user.save()
       return song
     } catch (error) {
       throw error
@@ -377,10 +368,38 @@ class CollectionService {
 
   async deleteMySong(userId, songId) {
     try {
-      const user = await User.findById(userId)
-      user.songUploadIdList = user.songUploadIdList.filter((songIdItem) => songIdItem !== songId)
-      await user.save()
+      const result = Song.findOneAndDelete({ userId: user._id, _id: songId })
+      if (!result) {
+        throw new createError.BadRequest('The song not exist or user does not have the song')
+      }
       return true
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async getInfo(user) {
+    try {
+      const [favoriteSongList, favoriteAlbumList, playlistList, favoritePlaylistList, mySongList, favoriteArtistList] =
+        await Promise.all([
+          this.getFavoriteSongList(user),
+          this.getFavoriteAlbum(user),
+          this.getPlaylistList(user),
+          this.getFavoritePlaylistList(user),
+          this.getMySongList(user),
+          this.getFavoriteArtistList(user),
+
+        ])
+
+      return {
+        favoriteSongList,
+        favoriteAlbumList,
+        playlistList,
+        favoritePlaylistList,
+        mySongList,
+        favoriteArtistList
+      }
+
     } catch (error) {
       throw error
     }

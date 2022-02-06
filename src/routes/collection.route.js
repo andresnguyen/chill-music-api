@@ -3,6 +3,7 @@ const router = express.Router()
 import CollectionController from '../controllers/collection.controller'
 import fileUploader from '../configs/cloudinary.config'
 
+
 // FAVORITE
 router.get('/favorite-songs', CollectionController.getFavoriteSongList)
 router.post('/favorite-songs', CollectionController.createFavoriteSong)
@@ -35,5 +36,7 @@ router.delete('/artists/:artistId', CollectionController.deleteArtistFromFavorit
 router.get('/my-songs', CollectionController.getMySongList)
 router.post('/my-songs', fileUploader.single('file'), CollectionController.createMySong)
 router.delete('/my-songs/:songId', CollectionController.deleteMySong)
+
+router.get('/', CollectionController.getInfo)
 
 export default router

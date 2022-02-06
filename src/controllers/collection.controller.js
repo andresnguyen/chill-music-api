@@ -223,6 +223,17 @@ class CollectionController {
       next(error)
     }
   }
+
+  // OTHERS ===============================================
+
+  async getInfo(req, res, next) {
+    try {
+      const data = await CollectionService.getInfo(req.user, req.params.artistId)
+      return res.status(OK).json({ ...singleResponse, data })
+    } catch (error) {
+      next(error)
+    }
+  }
 }
 
 export default new CollectionController()
