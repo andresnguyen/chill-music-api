@@ -3,6 +3,7 @@ const router = express.Router()
 import AlbumController from '../controllers/album.controller'
 
 router.get('/', AlbumController.getAll)
+router.get('/detail/:id', AlbumController.getDetail)
 router.get('/:id', AlbumController.getById)
 router.post('/', AlbumController.create)
 router.patch('/:id', AlbumController.update)

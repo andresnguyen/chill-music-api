@@ -1,8 +1,11 @@
 import Playlist from '../models/playlist.model'
+import Category from '../models/category.model'
+import Artist from '../models/artist.model'
+
 
 class PlaylistService {
-  async getAll({ page = 0, limit = 20, q = '' }) {
-    page = Number.parseInt(page)
+  async getAll({ page = 1, limit = 20, q = '' }) {
+    page = Number.parseInt(page) - 1
     limit = Number.parseInt(limit)
     const query = q ? { name: new RegExp(q, 'i') } : {}
     try {
@@ -20,7 +23,35 @@ class PlaylistService {
   async getById(id) {
     try {
       const result = await Playlist.findById(id).lean()
-      return result
+      const [songList, category, artist] = await Promise.all([
+        await SongService.getSongFromArray(result.songList),
+        await Category.findById(result.categoryId),
+      ])
+
+      return {
+        ...result,
+        songList,
+        category,
+        artist,
+      }
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async getDetail(id) {
+    try {
+      const result = await Playlist.findById(id).lean()
+      const [category, artist] = await Promise.all([
+        await Category.findById(result.categoryId),
+        await Artist.findById(result.artistId),
+      ])
+
+      return {
+        ...result,
+        category,
+        artist,
+      }
     } catch (error) {
       throw error
     }

@@ -3,6 +3,7 @@ const router = express.Router()
 import PlaylistController from '../controllers/playlist.controller'
 
 router.get('/', PlaylistController.getAll)
+router.get('/detail/:id', PlaylistController.getDetail)
 router.get('/:id', PlaylistController.getById)
 router.post('/', PlaylistController.create)
 router.patch('/:id', PlaylistController.update)

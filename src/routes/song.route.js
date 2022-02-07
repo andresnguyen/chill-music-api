@@ -5,6 +5,7 @@ import fileUploader from '../configs/cloudinary.config'
 
 router.get('/', SongController.getAll)
 router.get('/from-array', SongController.getSongFromArray)
+router.get('/from-artist/:artistId', SongController.getSongByArtistID)
 router.get('/:id', SongController.getById)
 router.post('/', fileUploader.array('file'), SongController.create)
 router.patch('/:id', SongController.update)

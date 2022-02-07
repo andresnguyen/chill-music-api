@@ -23,6 +23,16 @@ class AlbumController {
     }
   }
 
+  async getDetail(req, res, next) {
+    const id = req.params.id
+    try {
+      const data = await AlbumService.getDetail(id)
+      return res.status(OK).json({ ...singleResponse, data })
+    } catch (error) {
+      next(error)
+    }
+  }
+
   async create(req, res, next) {
     try {
       const data = await AlbumService.create(req.body)

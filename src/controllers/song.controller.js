@@ -62,6 +62,15 @@ class SongController {
       next(error)
     }
   }
+
+  async getSongByArtistID(req, res, next) {
+    try {
+      const data = await SongService.getSongByArtistID(req.params.artistId)
+      res.status(OK).json({ ...pluralResponse, data })
+    } catch (error) {
+      next(error)
+    }
+  }
 }
 
 export default new SongController()

@@ -4,8 +4,8 @@ import Category from '../models/category.model'
 import SongService from './song.service'
 
 class AlbumService {
-  async getAll({ page = 0, limit = 20, q = '' }) {
-    page = Number.parseInt(page)
+  async getAll({ page = 1, limit = 20, q = '' }) {
+    page = Number.parseInt(page) - 1
     limit = Number.parseInt(limit)
     const query = q ? { name: new RegExp(q, 'i') } : {}
     try {
@@ -56,6 +56,24 @@ class AlbumService {
       return {
         ...result,
         songList,
+        category,
+        artist,
+      }
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async getDetail(id) {
+    try {
+      const result = await Album.findById(id).lean()
+      const [category, artist] = await Promise.all([
+        await Category.findById(result.categoryId),
+        await Artist.findById(result.artistId),
+      ])
+
+      return {
+        ...result,
         category,
         artist,
       }

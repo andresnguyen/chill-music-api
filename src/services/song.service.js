@@ -4,8 +4,8 @@ import createError from 'http-errors'
 import Category from '../models/category.model'
 
 class SongService {
-  async getAll({ page = 0, limit = 20, q = '', categoryId }) {
-    page = Number.parseInt(page)
+  async getAll({ page = 1, limit = 20, q = '', categoryId, select }) {
+    page = Number.parseInt(page) - 1
     limit = Number.parseInt(limit)
     const query = q ? { name: new RegExp(q, 'i'), categoryId } : {}
     try {
@@ -13,7 +13,9 @@ class SongService {
         .skip(page * limit)
         .limit(limit)
 
-      data = await this.getSongFromArraySong(data)
+      if(!select) {
+        data = await this.getSongFromArraySong(data)
+      }
 
       const count = await Song.find(query).count()
       return { data, pagination: { page, limit, count } }
@@ -142,7 +144,7 @@ class SongService {
 
       if (songList.length === 0) return []
 
-      const result = await this.getSongFromArray(songList.map((song) => song._id))
+      const result = await this.getSongFromArraySong(songList)
       return result
     } catch (error) {
       throw error
@@ -161,6 +163,8 @@ class SongService {
       throw error
     }
   }
+
+
 }
 
 export default new SongService()

@@ -17,9 +17,15 @@ const playlistSchema = new mongoose.Schema(
     },
     imageURL: {
       type: String,
+      default: null,
+    },
+    categoryId: {
+      type: String,
+      default: null,
     },
     bannerURL: {
       type: String,
+      default: null,
     },
     view: {
       type: Number,
