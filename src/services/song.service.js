@@ -60,20 +60,7 @@ class SongService {
 
   async create(data) {
     try {
-      let {
-        body: { name, singer, category },
-        files,
-      } = data
-
-      const newData = {
-        name,
-        singer,
-        category,
-        download_url: files[0].path,
-        image_path: files[1].path,
-        image_path_cover: files[2].path,
-      }
-      const result = await new Song({ ...newData }).save()
+      const result = await new Song({ ...data }).save()
       return result
     } catch (error) {
       throw error
