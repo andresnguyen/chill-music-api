@@ -1,6 +1,7 @@
 import Song from '../models/song.model'
 import Artist from '../models/artist.model'
 import createError from 'http-errors'
+import Category from '../models/category.model'
 
 class SongService {
   async getAll({ page = 0, limit = 20, q = '', categoryId }) {
@@ -8,9 +9,12 @@ class SongService {
     limit = Number.parseInt(limit)
     const query = q ? { name: new RegExp(q, 'i'), categoryId } : {}
     try {
-      const data = await Song.find(query)
+      let data = await Song.find(query)
         .skip(page * limit)
         .limit(limit)
+
+      data = await this.getSongFromArraySong(data)
+
       const count = await Song.find(query).count()
       return { data, pagination: { page, limit, count } }
     } catch (error) {
@@ -21,10 +25,31 @@ class SongService {
   async getById(songId) {
     try {
       const result = await Song.findById(songId).lean()
-      const artistList = await Artist.find({ _id: { $in: result.artistList } })
+      const [artistList, category] = await Promise.all([
+        Artist.find({ _id: { $in: result.artistList } }),
+        Category.findById(result.categoryId),
+      ])
       return {
         ...result,
         artistList,
+        category
+      }
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async getBySong(song) {
+    try {
+      const [artistList, category] = Promise.all([
+        Artist.find({ _id: { $in: song.artistList } }),
+        Category.findById(song.categoryId),
+        // get user
+      ])
+      return {
+        ...song,
+        artistList,
+        category,
       }
     } catch (error) {
       throw error
@@ -89,7 +114,20 @@ class SongService {
 
   async getSongFromArray(songIdList) {
     try {
-      const result = await Promise.all(songIdList.map(async (songId) => await this.getById(songId.toString())))
+      const result = await Promise.all(
+        songIdList.map(async (songId) => this.getById(songId.toString()))
+      )
+      return result
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async getSongFromArraySong(songList) {
+    try {
+      const result = await Promise.all(
+        songList.map(async (song) => this.getById(song))
+      )
       return result
     } catch (error) {
       throw error
@@ -102,7 +140,7 @@ class SongService {
         artistList: artistId.toString(),
       }).lean()
 
-      if(songList.length === 0) return []
+      if (songList.length === 0) return []
 
       const result = await this.getSongFromArray(songList.map((song) => song._id))
       return result
@@ -115,7 +153,7 @@ class SongService {
     try {
       const songList = await Song.find(query).lean()
 
-      if(songList.length === 0) return []
+      if (songList.length === 0) return []
 
       const result = await this.getSongFromArray(songList.map((song) => song._id))
       return result
