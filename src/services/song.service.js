@@ -34,6 +34,7 @@ class SongService {
       return {
         ...result,
         artistList,
+        artistIdList: result.artistList,
         category
       }
     } catch (error) {

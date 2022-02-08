@@ -6,7 +6,7 @@ class PlaylistController {
   async getAll(req, res, next) {
     try {
       const data = await PlaylistService.getAll(req.query)
-      return res.status(OK).json({ ...pluralResponse,  ...data })
+      return res.status(OK).json({ ...pluralResponse, ...data })
     } catch (error) {
       next(error)
     }
@@ -22,7 +22,6 @@ class PlaylistController {
     }
   }
 
-
   async getDetail(req, res, next) {
     const id = req.params.id
     try {
@@ -35,7 +34,7 @@ class PlaylistController {
 
   async create(req, res, next) {
     try {
-      const data = await PlaylistService.create(req.body)
+      const data = await PlaylistService.create(req.user, req.body)
       res.status(OK).json({ ...singleResponse, data })
     } catch (error) {
       next(error)

@@ -59,7 +59,7 @@ class PlaylistService {
 
   async create(user, data) {
     try {
-      const result = await new Playlist({ ...data, userId: user._id.toString() }).save()
+      const result = await new Playlist({ ...data}).save()
       return result
     } catch (error) {
       throw error
