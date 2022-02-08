@@ -15,6 +15,7 @@
   "license": "ISC",
   "dependencies": {
     "@babel/runtime": "^7.10.4",
+    "axios": "^0.25.0",
     "babel-plugin-istanbul": "^6.0.0",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.26.3",

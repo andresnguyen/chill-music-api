@@ -19,6 +19,15 @@ class SiteController {
       next(error)
     }
   }
+
+  async statistic(req, res, next) {
+    try {
+      const data = await SiteService.statistic()
+      return res.status(OK).json({ ...pluralResponse, data })
+    } catch (error) {
+      next(error)
+    }
+  }
 }
 
 export default new SiteController()

@@ -1,6 +1,9 @@
-import Album from '../models/album.model'
+import userAPI from '../api/userAPI'
 import Category from '../models/category.model'
+import Album from '../models/album.model'
 import Song from '../models/song.model'
+import Artist from '../models/artist.model'
+import Playlist from '../models/playlist.model'
 
 import { randomSong } from '../utils/common'
 
@@ -36,8 +39,26 @@ class SiteService {
     }
   }
 
-  async personal() {
-    
+  async personal() {}
+
+  async statistic() {
+    const [userCount, artistCount, songCount, albumCount, playlistCount, categoryCount] =
+      await Promise.all([
+        userAPI.count(),
+        Artist.find({}).count(),
+        Song.find({}).count(),
+        Album.find({}).count(),
+        Playlist.find({}).count(),
+        Category.find({}).count(),
+      ])
+    return {
+      userCount: userCount.data,
+      artistCount,
+      songCount,
+      albumCount,
+      playlistCount,
+      categoryCount,
+    }
   }
 }
 
