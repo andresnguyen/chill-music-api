@@ -228,7 +228,7 @@ class CollectionController {
 
   async getInfo(req, res, next) {
     try {
-      const data = await CollectionService.getInfo(req.user, req.params.artistId)
+      const data = await CollectionService.getInfo(req.user)
       return res.status(OK).json({ ...singleResponse, data })
     } catch (error) {
       next(error)
