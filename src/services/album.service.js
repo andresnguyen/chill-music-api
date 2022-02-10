@@ -4,10 +4,11 @@ import Category from '../models/category.model'
 import SongService from './song.service'
 
 class AlbumService {
-  async getAll({ page = 1, limit = 20, q = '' }) {
+  async getAll({ page = 1, limit = 20, q = '', categoryId }) {
     page = Number.parseInt(page) - 1
     limit = Number.parseInt(limit)
     const query = q ? { name: new RegExp(q, 'i') } : {}
+    if(categoryId) query.categoryId = categoryId.toString()
     try {
       const data = await Album.find(query)
         .skip(page * limit)

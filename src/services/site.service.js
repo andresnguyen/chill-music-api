@@ -4,8 +4,9 @@ import Album from '../models/album.model'
 import Song from '../models/song.model'
 import Artist from '../models/artist.model'
 import Playlist from '../models/playlist.model'
-
+import SongService from './song.service'
 import { randomSong } from '../utils/common'
+import AlbumService from './album.service'
 
 class SiteService {
   async home() {
@@ -17,21 +18,24 @@ class SiteService {
     ]
 
     try {
-      const songList = await Song.find({})
-
-      const resultOne = titleList.map((title) => ({
-        title: title,
-        data: randomSong(0, songList.length - 1, 20).map((item) => songList[item]),
-      }))
+      const { data: songList } = await SongService.getAll({ limit: 1000 })
 
       const categoryList = await Category.find({})
 
       const resultTwo = await Promise.all(
-        categoryList.map(async (item) => ({
-          title: item.name,
-          data: await Album.find({ categoryId: item._id }).limit(20),
-        }))
+        categoryList.map(async (item) => {
+          const { data } = await AlbumService.getAll({ limit: 20, categoryId: item._id })
+          return {
+            data,
+            title: item.name,
+          }
+        })
       )
+      
+      const resultOne = titleList.map((title) => ({
+        title: title,
+        data: randomSong(0, songList.length - 1, 20).map((item) => songList[item]),
+      }))
 
       return [...resultOne, ...resultTwo]
     } catch (error) {
