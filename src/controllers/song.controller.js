@@ -24,7 +24,7 @@ class SongController {
 
   async create(req, res, next) {
     try {
-      const data = await SongService.create(req.body)
+      const data = await SongService.create({...req.body, userId: req.user._id})
       res.status(OK).json({ ...singleResponse, data })
     } catch (error) {
       next(error)

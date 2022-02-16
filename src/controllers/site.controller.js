@@ -28,6 +28,15 @@ class SiteController {
       next(error)
     }
   }
+
+  async top(req, res, next) {
+    try {
+      const data = await SiteService.top(req.query)
+      return res.status(OK).json({ ...pluralResponse, data })
+    } catch (error) {
+      next(error)
+    }
+  }
 }
 
 export default new SiteController()

@@ -4,6 +4,11 @@ import CollectionController from '../controllers/collection.controller'
 import fileUploader from '../configs/cloudinary.config'
 
 
+router.get('/favorite-song-ids', CollectionController.getFavoriteSongIdList)
+router.get('/favorite-album-ids', CollectionController.getFavoriteAlbumIdList)
+router.get('/favorite-playlist-ids', CollectionController.getFavoritePlaylistIdList)
+router.get('/favorite-artist-ids', CollectionController.getFavoriteArtistIdList)
+
 // FAVORITE
 router.get('/favorite-songs', CollectionController.getFavoriteSongList)
 router.post('/favorite-songs', CollectionController.createFavoriteSong)
@@ -20,7 +25,7 @@ router.delete('/playlists/:playlistId/delete', CollectionController.deleteSongFr
 
 router.get('/favorite-playlists', CollectionController.getFavoritePlaylistList)
 router.post('/favorite-playlists', CollectionController.addPlaylistToFavorite)
-router.delete('/favorite-playlist/:playlistId', CollectionController.deletePlaylistFromCollection)
+router.delete('/favorite-playlists/:playlistId', CollectionController.deletePlaylistFromFavorite)
 
 // ALBUMS 
 router.get('/albums', CollectionController.getFavoriteAlbum)
@@ -38,5 +43,7 @@ router.post('/my-songs', fileUploader.single('file'), CollectionController.creat
 router.delete('/my-songs/:songId', CollectionController.deleteMySong)
 
 router.get('/', CollectionController.getInfo)
+
+
 
 export default router

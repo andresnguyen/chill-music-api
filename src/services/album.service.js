@@ -8,16 +8,14 @@ class AlbumService {
     page = Number.parseInt(page) - 1
     limit = Number.parseInt(limit)
     const query = q ? { name: new RegExp(q, 'i') } : {}
-    if(categoryId) query.categoryId = categoryId.toString()
+    if (categoryId) query.categoryId = categoryId.toString()
     try {
       const data = await Album.find(query)
         .skip(page * limit)
         .limit(limit)
         .lean()
 
-      const result = await Promise.all(
-        data.map(async (item) => await this.getByItem(item))
-      )
+      const result = await Promise.all(data.map((item) => this.getByItem(item)))
 
       const count = await Album.find(query).count()
       return { data: result, pagination: { page, limit, count } }
@@ -29,9 +27,9 @@ class AlbumService {
   async getByItem(item) {
     try {
       const [songList, category, artist] = await Promise.all([
-        await SongService.getSongFromArray(item.songList),
-        await Category.findById(item.categoryId),
-        await Artist.findById(item.artistId),
+        SongService.getSongFromArray(item.songList),
+        Category.findById(item.categoryId),
+        Artist.findById(item.artistId),
       ])
 
       return {
@@ -49,9 +47,9 @@ class AlbumService {
     try {
       const result = await Album.findById(id).lean()
       const [songList, category, artist] = await Promise.all([
-        await SongService.getSongFromArray(result.songList),
-        await Category.findById(result.categoryId),
-        await Artist.findById(result.artistId),
+        SongService.getSongFromArray(result.songList),
+        Category.findById(result.categoryId),
+        Artist.findById(result.artistId),
       ])
 
       return {
@@ -69,8 +67,8 @@ class AlbumService {
     try {
       const result = await Album.findById(id).lean()
       const [category, artist] = await Promise.all([
-        await Category.findById(result.categoryId),
-        await Artist.findById(result.artistId),
+        Category.findById(result.categoryId),
+        Artist.findById(result.artistId),
       ])
 
       return {
@@ -84,7 +82,7 @@ class AlbumService {
   }
 
   async getSongFromArray(albumIdList) {
-    const result = Promise.all(albumIdList.map(async (albumId) => await this.getById(albumId)))
+    const result = Promise.all(albumIdList.map((albumId) => this.getById(albumId)))
     return result
   }
 

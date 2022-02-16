@@ -27,6 +27,7 @@ class CollectionService {
       const result = await SongService.getSongFromArray(
         favoriteSongList.map((favoriteSong) => favoriteSong.songId)
       )
+
       return result
     } catch (error) {
       throw error
@@ -35,7 +36,7 @@ class CollectionService {
 
   async createFavoriteSong(user, songId) {
     try {
-      if (await FavoriteSong.findOne({ songId: songId })) {
+      if (await FavoriteSong.findOne({ songId: songId, userId: user._id })) {
         throw new createError.BadRequest('This song exists in your favorite song list')
       }
       await new FavoriteSong({ songId: songId, userId: user._id }).save()
@@ -80,11 +81,11 @@ class CollectionService {
         throw new createError.BadRequest('This playlist does not exists')
       }
 
-      if (await PlaylistFavorite.findOne({ userId: user._id, playlistId })) {
+      if (await FavoritePlaylist.findOne({ userId: user._id, playlistId })) {
         throw new createError.BadRequest('This playlist exists in your playlist list')
       }
 
-      await new PlaylistFavorite({
+      await new FavoritePlaylist({
         userId: user._id,
         playlistId,
       }).save()
@@ -95,13 +96,14 @@ class CollectionService {
     }
   }
 
-  async deletePlaylistFromCollection(user, playlistId) {
+  async deletePlaylistFromFavorite(user, playlistId) {
     try {
-      const playlistFavorite = PlaylistFavorite.findOneAndDelete({
+      const favoritePlaylist = await FavoritePlaylist.findOneAndDelete({
         userId: user._id,
         playlistId,
       })
-      if (!playlistFavorite) {
+      
+      if (!favoritePlaylist) {
         throw new createError.BadRequest('This playlist does not exist in your album list')
       }
 
@@ -271,10 +273,11 @@ class CollectionService {
 
   async deleteAlbumFromFavorite(user, albumId) {
     try {
-      const favoriteAlbum = FavoriteAlbum.findOneAndDelete({
+      const favoriteAlbum = await FavoriteAlbum.findOneAndDelete({
         userId: user._id,
         albumId,
       })
+
       if (!favoriteAlbum) {
         throw new createError.BadRequest('This album does not exist in your album list')
       }
@@ -331,7 +334,7 @@ class CollectionService {
       })
 
       if (!artistFavorite) {
-        throw new createError.BadRequest('This artist does not exist in your album list')
+        throw new createError.BadRequest('This artist does not exist in your artist list')
       }
 
       return true
@@ -380,16 +383,21 @@ class CollectionService {
 
   async getInfo(user) {
     try {
-      const [favoriteSongList, favoriteAlbumList, playlistList, favoritePlaylistList, mySongList, favoriteArtistList] =
-        await Promise.all([
-          this.getFavoriteSongList(user),
-          this.getFavoriteAlbum(user),
-          this.getPlaylistList(user),
-          this.getFavoritePlaylistList(user),
-          this.getMySongList(user),
-          this.getFavoriteArtistList(user),
-
-        ])
+      const [
+        favoriteSongList,
+        favoriteAlbumList,
+        playlistList,
+        favoritePlaylistList,
+        mySongList,
+        favoriteArtistList,
+      ] = await Promise.all([
+        this.getFavoriteSongList(user),
+        this.getFavoriteAlbum(user),
+        this.getPlaylistList(user),
+        this.getFavoritePlaylistList(user),
+        this.getMySongList(user),
+        this.getFavoriteArtistList(user),
+      ])
 
       return {
         favoriteSongList,
@@ -397,9 +405,53 @@ class CollectionService {
         playlistList,
         favoritePlaylistList,
         mySongList,
-        favoriteArtistList
+        favoriteArtistList,
       }
+    } catch (error) {
+      throw error
+    }
+  }
 
+  // FAVORITE
+  async getFavoriteSongIdList(user) {
+    try {
+      const songFavorite = await FavoriteSong.find({
+        userId: user._id,
+      }).lean()
+      return songFavorite
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async getFavoriteAlbumIdList(user) {
+    try {
+      const albumFavorite = await FavoriteAlbum.find({
+        userId: user._id,
+      }).lean()
+      return albumFavorite
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async getFavoritePlaylistIdList(user) {
+    try {
+      const playlistFavorite = await FavoritePlaylist.find({
+        userId: user._id,
+      }).lean()
+      return playlistFavorite
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async getFavoriteArtistIdList(user) {
+    try {
+      const artistFavorite = await FavoriteArtist.find({
+        userId: user._id,
+      }).lean()
+      return artistFavorite
     } catch (error) {
       throw error
     }

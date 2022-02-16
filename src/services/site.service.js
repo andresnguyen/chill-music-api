@@ -18,26 +18,27 @@ class SiteService {
     ]
 
     try {
-      const { data: songList } = await SongService.getAll({ limit: 1000 })
+      const { data: songList } = await SongService.getAll({ limit: 100 })
 
-      const categoryList = await Category.find({})
+      // const categoryList = await Category.find({})
 
-      const resultTwo = await Promise.all(
-        categoryList.map(async (item) => {
-          const { data } = await AlbumService.getAll({ limit: 20, categoryId: item._id })
-          return {
-            data,
-            title: item.name,
-          }
-        })
-      )
-      
+      // const resultTwo = await Promise.all(
+      //   categoryList.map(async (item) => {
+      //     const { data } = await AlbumService.getAll({ limit: 20, categoryId: item._id })
+      //     return {
+      //       data,
+      //       title: item.name,
+      //     }
+      //   })
+      // )
+
+
       const resultOne = titleList.map((title) => ({
         title: title,
         data: randomSong(0, songList.length - 1, 20).map((item) => songList[item]),
       }))
 
-      return [...resultOne, ...resultTwo]
+      return [...resultOne] //  [...resultOne, ...resultTwo]
     } catch (error) {
       throw error
     }
@@ -63,6 +64,14 @@ class SiteService {
       playlistCount,
       categoryCount,
     }
+  }
+
+  async top(data) {
+    const topList = await Song.find({})
+      .sort({ view: 'descending' })
+      .limit(Number(data.limit) || 10)
+    const result = await SongService.getSongFromArraySong(topList)
+    return result
   }
 }
 

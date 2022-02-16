@@ -1,6 +1,7 @@
 import Playlist from '../models/playlist.model'
 import Category from '../models/category.model'
 import Artist from '../models/artist.model'
+import SongService from '../services/song.service'
 
 
 class PlaylistService {
@@ -24,8 +25,8 @@ class PlaylistService {
     try {
       const result = await Playlist.findById(id).lean()
       const [songList, category, artist] = await Promise.all([
-        await SongService.getSongFromArray(result.songList),
-        await Category.findById(result.categoryId),
+        SongService.getSongFromArray(result.songList),
+        Category.findById(result.categoryId),
       ])
 
       return {
@@ -43,8 +44,8 @@ class PlaylistService {
     try {
       const result = await Playlist.findById(id).lean()
       const [category, artist] = await Promise.all([
-        await Category.findById(result.categoryId),
-        await Artist.findById(result.artistId),
+        Category.findById(result.categoryId),
+        Artist.findById(result.artistId),
       ])
 
       return {

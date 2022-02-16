@@ -27,10 +27,12 @@ class SongService {
   async getById(songId) {
     try {
       const result = await Song.findById(songId).lean()
+
       const [artistList, category] = await Promise.all([
         Artist.find({ _id: { $in: result.artistList } }),
         Category.findById(result.categoryId),
       ])
+
       return {
         ...result,
         artistList,
@@ -95,7 +97,7 @@ class SongService {
         throw new createError.BadRequest("Song doesn't exist")
       }
 
-      result.isDelete = 1
+      result.isDelete = true
       return await result.save()
     } catch (error) {
       throw error
@@ -104,9 +106,12 @@ class SongService {
 
   async getSongFromArray(songIdList) {
     try {
+
+
       const result = await Promise.all(
-        songIdList.map(async (songId) => this.getById(songId.toString()))
+        songIdList.map((songId) => this.getById(songId?.toString()))
       )
+
       return result
     } catch (error) {
       throw error

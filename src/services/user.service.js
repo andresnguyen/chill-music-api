@@ -12,6 +12,7 @@ class UserService {
         .skip(page * limit)
         .limit(limit)
         .lean()
+
       const count = await User.find(query).count()
       return { data, pagination: { page, limit, count } }
     } catch (error) {

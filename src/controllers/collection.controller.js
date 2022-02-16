@@ -125,9 +125,9 @@ class CollectionController {
       next(error)
     }
   }
-  async deletePlaylistFromCollection(req, res, next) {
+  async deletePlaylistFromFavorite(req, res, next) {
     try {
-      const data = await CollectionService.deletePlaylistFromCollection(
+      const data = await CollectionService.deletePlaylistFromFavorite(
         req.user,
         req.params.playlistId
       )
@@ -230,6 +230,42 @@ class CollectionController {
     try {
       const data = await CollectionService.getInfo(req.user)
       return res.status(OK).json({ ...singleResponse, data })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async getFavoriteSongIdList(req, res, next) {
+    try {
+      const data = await CollectionService.getFavoriteSongIdList(req.user)
+      return res.status(OK).json({ ...pluralResponse, data })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async getFavoriteAlbumIdList(req, res, next) {
+    try {
+      const data = await CollectionService.getFavoriteAlbumIdList(req.user)
+      return res.status(OK).json({ ...pluralResponse, data })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async getFavoritePlaylistIdList(req, res, next) {
+    try {
+      const data = await CollectionService.getFavoritePlaylistIdList(req.user)
+      return res.status(OK).json({ ...pluralResponse, data })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async getFavoriteArtistIdList(req, res, next) {
+    try {
+      const data = await CollectionService.getFavoriteArtistIdList(req.user)
+      return res.status(OK).json({ ...pluralResponse, data })
     } catch (error) {
       next(error)
     }
