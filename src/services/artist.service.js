@@ -5,16 +5,20 @@ import SongService from './song.service'
 import FavoriteArtist from '../models/favorite-artist.model'
 
 class ArtistService {
-  async getAll({ page = 1, limit = 20, q = '' }) {
+  async getAll({ page = 1, limit = 20, q = '', categoryId }) {
     page = Number.parseInt(page) - 1
     limit = Number.parseInt(limit)
-    const query = q ? { name: new RegExp(q, 'i') } : {}
+    const query = q ? { fullName: new RegExp(q, 'i') } : {}
+    if (categoryId) query.categoryId = categoryId
     try {
-      const data = await Artist.find(query)
-        .skip(page * limit)
-        .limit(limit)
-        .lean()
-      const count = await Artist.find(query).count()
+      const [data, count] = await Promise.all([
+        Artist.find(query)
+          .skip(page * limit)
+          .limit(limit)
+          .lean(),
+        Artist.find(query).count(),
+      ])
+
       return { data, pagination: { page, limit, count } }
     } catch (error) {
       throw error
@@ -68,15 +72,6 @@ class ArtistService {
     }
   }
 
-  async getBySlug(data) {
-    try {
-      const result = await Artist.findOne({ slug: data })
-      return result
-    } catch (error) {
-      throw error
-    }
-  }
-
   async deleteSoft(id) {
     try {
       const result = await Artist.findByIdAndDelete(id)
@@ -90,9 +85,7 @@ class ArtistService {
 
   async getArtistFromArray(artistIdList) {
     try {
-      const result = await Promise.all(
-        artistIdList.map(async (artistId) => await this.getById(artistId))
-      )
+      const result = await Promise.all(artistIdList.map((artistId) => this.getById(artistId)))
       return result
     } catch (error) {
       throw error

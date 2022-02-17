@@ -11,6 +11,15 @@ class SiteController {
     }
   }
 
+  async search(req, res, next) {
+    try {
+      const data = await SiteService.search(req.query)
+      return res.status(OK).json({ ...pluralResponse, data })
+    } catch (error) {
+      next(error)
+    }
+  }
+
   async personal(req, res, next) {
     try {
       const data = await SiteService.personal()

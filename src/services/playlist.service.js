@@ -3,18 +3,20 @@ import Category from '../models/category.model'
 import Artist from '../models/artist.model'
 import SongService from '../services/song.service'
 
-
 class PlaylistService {
-  async getAll({ page = 1, limit = 20, q = '' }) {
+  async getAll({ page = 1, limit = 20, q = '', categoryId }) {
     page = Number.parseInt(page) - 1
     limit = Number.parseInt(limit)
     const query = q ? { name: new RegExp(q, 'i') } : {}
+    if (categoryId) query.categoryId = categoryId
     try {
-      const data = await Playlist.find(query)
-        .skip(page * limit)
-        .limit(limit)
-        .lean()
-      const count = await Playlist.find(query).count()
+      const [data, count] = await Promise.all([
+        Playlist.find(query)
+          .skip(page * limit)
+          .limit(limit)
+          .lean(),
+        Playlist.find(query).count(),
+      ])
       return { data, pagination: { page, limit, count } }
     } catch (error) {
       throw error
@@ -60,7 +62,7 @@ class PlaylistService {
 
   async create(user, data) {
     try {
-      const result = await new Playlist({ ...data}).save()
+      const result = await new Playlist({ ...data, userId: user._id }).save()
       return result
     } catch (error) {
       throw error

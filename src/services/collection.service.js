@@ -241,7 +241,7 @@ class CollectionService {
         userId: user._id,
       })
 
-      const playlistList = await AlbumService.getSongFromArray(
+      const playlistList = await AlbumService.getAlbumFromArray(
         favoriteAlbumList.map((favoriteAlbum) => favoriteAlbum.albumId)
       )
       return playlistList

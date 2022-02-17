@@ -7,6 +7,9 @@ import Playlist from '../models/playlist.model'
 import SongService from './song.service'
 import { randomSong } from '../utils/common'
 import AlbumService from './album.service'
+import artistService from './artist.service'
+import albumService from './album.service'
+import playlistService from './playlist.service'
 
 class SiteService {
   async home() {
@@ -31,7 +34,6 @@ class SiteService {
       //     }
       //   })
       // )
-
 
       const resultOne = titleList.map((title) => ({
         title: title,
@@ -69,9 +71,27 @@ class SiteService {
   async top(data) {
     const topList = await Song.find({})
       .sort({ view: 'descending' })
-      .limit(Number(data.limit) || 10)
+      .limit(Number(data.limit) || 10).lean()
     const result = await SongService.getSongFromArraySong(topList)
     return result
+  }
+
+  async search({ q }) {
+    const promiseList = [
+      SongService.getAll({ q }),
+      artistService.getAll({ q }),
+      albumService.getAll({ q }),
+      playlistService.getAll({ q }),
+    ]
+
+    const [songResult, artistResult, albumResult, playlistResult] = await Promise.all(promiseList)
+
+    return {
+      songResult,
+      artistResult,
+      albumResult,
+      playlistResult,
+    }
   }
 }
 

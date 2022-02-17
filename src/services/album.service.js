@@ -10,14 +10,16 @@ class AlbumService {
     const query = q ? { name: new RegExp(q, 'i') } : {}
     if (categoryId) query.categoryId = categoryId.toString()
     try {
-      const data = await Album.find(query)
-        .skip(page * limit)
-        .limit(limit)
-        .lean()
+      const [data, count] = await Promise.all([
+        Album.find(query)
+          .skip(page * limit)
+          .limit(limit)
+          .lean(),
+        Album.find(query).count(),
+      ])
 
       const result = await Promise.all(data.map((item) => this.getByItem(item, noArtist)))
 
-      const count = await Album.find(query).count()
       return { data: result, pagination: { page, limit, count } }
     } catch (error) {
       throw error
@@ -91,7 +93,7 @@ class AlbumService {
     }
   }
 
-  async getSongFromArray(albumIdList) {
+  async getAlbumFromArray(albumIdList) {
     const result = Promise.all(albumIdList.map((albumId) => this.getById(albumId)))
     return result
   }
