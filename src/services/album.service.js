@@ -4,7 +4,7 @@ import Category from '../models/category.model'
 import SongService from './song.service'
 
 class AlbumService {
-  async getAll({ page = 1, limit = 20, q = '', categoryId }) {
+  async getAll({ page = 1, limit = 20, q = '', categoryId, noArtist }) {
     page = Number.parseInt(page) - 1
     limit = Number.parseInt(limit)
     const query = q ? { name: new RegExp(q, 'i') } : {}
@@ -15,7 +15,7 @@ class AlbumService {
         .limit(limit)
         .lean()
 
-      const result = await Promise.all(data.map((item) => this.getByItem(item)))
+      const result = await Promise.all(data.map((item) => this.getByItem(item, noArtist)))
 
       const count = await Album.find(query).count()
       return { data: result, pagination: { page, limit, count } }
@@ -24,13 +24,23 @@ class AlbumService {
     }
   }
 
-  async getByItem(item) {
+  async getByItem(item, noArtist) {
+    const promiseList = noArtist
+      ? [Category.findById(item.categoryId), Artist.findById(item.artistId)]
+      : [
+          Category.findById(item.categoryId),
+          Artist.findById(item.artistId),
+          SongService.getSongFromArray(item.songList),
+        ]
     try {
-      const [songList, category, artist] = await Promise.all([
-        SongService.getSongFromArray(item.songList),
-        Category.findById(item.categoryId),
-        Artist.findById(item.artistId),
-      ])
+      const [category, artist, songList] = await Promise.all(promiseList)
+
+      if (noArtist)
+        return {
+          ...item,
+          category,
+          artist,
+        }
 
       return {
         ...item,

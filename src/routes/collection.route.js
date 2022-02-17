@@ -21,7 +21,7 @@ router.patch('/playlists/:playlistId', CollectionController.updatePlaylist)
 router.delete('/playlists/:playlistId', CollectionController.deletePlaylist)
 
 router.post('/playlists/:playlistId/add', CollectionController.addSongToPlaylist)
-router.delete('/playlists/:playlistId/delete', CollectionController.deleteSongFromPlaylist)
+router.patch('/playlists/:playlistId/delete', CollectionController.deleteSongFromPlaylist)
 
 router.get('/favorite-playlists', CollectionController.getFavoritePlaylistList)
 router.post('/favorite-playlists', CollectionController.addPlaylistToFavorite)

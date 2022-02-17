@@ -201,7 +201,7 @@ class CollectionService {
       }
 
       if (playlist.songList.includes(songId)) {
-        throw new createError.BadRequest('The song exists in the playlist')
+        return playlist
       }
 
       playlist.songList.unshift(songId)
