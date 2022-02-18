@@ -94,7 +94,7 @@ class AlbumService {
   }
 
   async getAlbumFromArray(albumIdList) {
-    const result = Promise.all(albumIdList.map((albumId) => this.getById(albumId)))
+    const result = await Promise.all(albumIdList.map((albumId) => this.getById(albumId)))
     return result
   }
 

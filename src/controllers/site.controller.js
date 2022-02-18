@@ -1,5 +1,5 @@
 import { OK } from '../constants/httpStatusCode.constant'
-import { pluralResponse } from '../constants/response.constant'
+import { pluralResponse, singleResponse } from '../constants/response.constant'
 import SiteService from '../services/site.service'
 class SiteController {
   async home(req, res, next) {
@@ -42,6 +42,60 @@ class SiteController {
     try {
       const data = await SiteService.top(req.query)
       return res.status(OK).json({ ...pluralResponse, data })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async getRecentSong(req, res, next) {
+    try {
+      const data = await SiteService.getRecentSong(req.user)
+      return res.status(OK).json({ ...pluralResponse, data })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async createRecentSong(req, res, next) {
+    try {
+      const data = await SiteService.createRecentSong(req.user, req.body.songId)
+      return res.status(OK).json({ ...singleResponse, data })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async getRecentPlaylist(req, res, next) {
+    try {
+      const data = await SiteService.getRecentPlaylist(req.user)
+      return res.status(OK).json({ ...pluralResponse, data })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async createRecentPlaylist(req, res, next) {
+    try {
+      const data = await SiteService.createRecentPlaylist(req.user, req.body.playlistId)
+      return res.status(OK).json({ ...singleResponse, data })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async getRecentAlbum(req, res, next) {
+    try {
+      const data = await SiteService.getRecentAlbum(req.user)
+      return res.status(OK).json({ ...pluralResponse, data })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async createRecentAlbum(req, res, next) {
+    try {
+      const data = await SiteService.createRecentAlbum(req.user, req.body.albumId)
+      return res.status(OK).json({ ...singleResponse, data })
     } catch (error) {
       next(error)
     }
