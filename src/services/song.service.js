@@ -16,6 +16,7 @@ class SongService {
         Song.find(query)
           .skip(page * limit)
           .limit(limit)
+          .sort({ createdAt: -1 })
           .lean(),
         Song.find(query).count(),
       ])
@@ -34,6 +35,8 @@ class SongService {
     try {
       const result = await Song.findById(songId).lean()
 
+      if (!result) return null
+
       const [artistList, category] = await Promise.all([
         Artist.find({ _id: { $in: result.artistList } }),
         Category.findById(result.categoryId),
@@ -51,6 +54,7 @@ class SongService {
   }
 
   async getBySong(song) {
+    if(!song) return null
     try {
       const [artistList, category] = await Promise.all([
         Artist.find({ _id: { $in: song.artistList } }),
@@ -113,7 +117,7 @@ class SongService {
     try {
       const result = await Promise.all(songIdList.map((songId) => this.getById(songId?.toString())))
 
-      return result
+      return result.filter((item) => Boolean(item))
     } catch (error) {
       throw error
     }
@@ -122,7 +126,7 @@ class SongService {
   async getSongFromArraySong(songList) {
     try {
       const result = await Promise.all(songList.map((song) => this.getBySong(song)))
-      return result
+      return result.filter((item) => Boolean(item))
     } catch (error) {
       throw error
     }
@@ -132,7 +136,9 @@ class SongService {
     try {
       const songList = await Song.find({
         artistList: artistId.toString(),
-      }).lean()
+      })
+        .sort({ createdAt: -1 })
+        .lean()
 
       if (songList.length === 0) return []
 
@@ -145,7 +151,7 @@ class SongService {
 
   async getSongByQuery(query) {
     try {
-      const songList = await Song.find(query).lean()
+      const songList = await Song.find(query).sort({ createdAt: -1 }).lean()
 
       if (songList.length === 0) return []
 

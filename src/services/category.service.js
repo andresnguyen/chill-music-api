@@ -64,6 +64,16 @@ class CategoryService {
     }
   }
 
+
+  async delete(id) {
+    try {
+      const result = await Category.findByIdAndDelete(id)
+      return result
+    } catch (error) {
+      throw error
+    }
+  }
+
   async deleteSoft(id) {
     try {
       const result = await Category.findByIdAndDelete(id)

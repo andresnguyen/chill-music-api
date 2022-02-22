@@ -25,18 +25,6 @@ class SiteService {
     try {
       const { data: songList } = await SongService.getAll({ limit: 100 })
 
-      // const categoryList = await Category.find({})
-
-      // const resultTwo = await Promise.all(
-      //   categoryList.map(async (item) => {
-      //     const { data } = await AlbumService.getAll({ limit: 20, categoryId: item._id })
-      //     return {
-      //       data,
-      //       title: item.name,
-      //     }
-      //   })
-      // )
-
       const resultOne = titleList.map((title) => ({
         title: title,
         data: randomSong(0, songList.length - 1, 20).map((item) => songList[item]),
@@ -77,7 +65,7 @@ class SiteService {
   async top(data) {
     try {
       const topList = await Song.find({})
-        .sort({ view: 'descending' })
+        .sort({ view: -1 })
         .limit(Number(data.limit) || 10)
         .lean()
       const result = await SongService.getSongFromArraySong(topList)
@@ -111,7 +99,7 @@ class SiteService {
 
   async getRecentSong(user) {
     try {
-      let recentSongList = await RecentSong.find({ userId: user._id }).lean()
+      let recentSongList = await RecentSong.find({ userId: user._id }).sort({ createdAt: -1 }).lean()
       recentSongList = new Set(recentSongList.map((recent) => recent.songId))
       const result = await SongService.getSongFromArray([...recentSongList])
 
@@ -132,7 +120,7 @@ class SiteService {
 
   async getRecentPlaylist(user) {
     try {
-      let recentPlaylistList = await RecentPlaylist.find({ userId: user._id }).lean()
+      let recentPlaylistList = await RecentPlaylist.find({ userId: user._id }).sort({ createdAt: -1 }).lean()
       recentPlaylistList = new Set(recentPlaylistList.map((recent) => recent.playlistId))
       const result = await Playlist.find({
         _id: { $in: [...recentPlaylistList] },
@@ -154,7 +142,7 @@ class SiteService {
 
   async getRecentAlbum(user) {
     try {
-      let recentAlbumList = await RecentAlbum.find({ userId: user._id }).lean()
+      let recentAlbumList = await RecentAlbum.find({ userId: user._id }).sort({ createdAt: -1 }).lean()
       recentAlbumList = [...new Set(recentAlbumList.map((recent) => recent.albumId))]
       const result = await AlbumService.getAlbumFromArray(recentAlbumList)
       return result

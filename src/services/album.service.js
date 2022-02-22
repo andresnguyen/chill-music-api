@@ -27,6 +27,7 @@ class AlbumService {
   }
 
   async getByItem(item, noArtist) {
+    if(!item) return null
     const promiseList = noArtist
       ? [Category.findById(item.categoryId), Artist.findById(item.artistId)]
       : [
@@ -78,6 +79,7 @@ class AlbumService {
   async getDetail(id) {
     try {
       const result = await Album.findById(id).lean()
+      if(!result) return null
       const [category, artist] = await Promise.all([
         Category.findById(result.categoryId),
         Artist.findById(result.artistId),
@@ -95,7 +97,8 @@ class AlbumService {
 
   async getAlbumFromArray(albumIdList) {
     const result = await Promise.all(albumIdList.map((albumId) => this.getById(albumId)))
-    return result
+    
+    return result.filter((item) => Boolean(item))
   }
 
   async create(data) {
@@ -121,17 +124,6 @@ class AlbumService {
   async delete(id) {
     try {
       const result = await Album.findByIdAndDelete(id)
-      return result
-    } catch (error) {
-      throw error
-    }
-  }
-
-  async deleteSoft(id) {
-    try {
-      const result = await Album.findByIdAndDelete(id)
-      result.isDelete = 1
-      await result.save()
       return result
     } catch (error) {
       throw error

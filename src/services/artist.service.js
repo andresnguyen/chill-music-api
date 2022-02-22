@@ -28,6 +28,7 @@ class ArtistService {
   async getById(id) {
     try {
       const result = await Artist.findById(id).lean()
+      if(!result) return null
       const [category, favoriteNumber] = await Promise.all([
         Category.findById(result.categoryId),
         FavoriteArtist.find({
@@ -86,7 +87,7 @@ class ArtistService {
   async getArtistFromArray(artistIdList) {
     try {
       const result = await Promise.all(artistIdList.map((artistId) => this.getById(artistId)))
-      return result
+      return result.filter((item) => Boolean(item))
     } catch (error) {
       throw error
     }
@@ -95,6 +96,8 @@ class ArtistService {
   async getDetail(id) {
     try {
       const artist = await this.getById(id)
+
+      if(!artist) return null
 
       const [songList, albumList, artistList, favoriteNumber] = await Promise.all([
         SongService.getSongByArtistID(artist._id.toString()),

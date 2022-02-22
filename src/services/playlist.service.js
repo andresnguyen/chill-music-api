@@ -26,6 +26,7 @@ class PlaylistService {
   async getById(id) {
     try {
       const result = await Playlist.findById(id).lean()
+      if(!result) return null
       const [songList, category, artist] = await Promise.all([
         SongService.getSongFromArray(result.songList),
         Category.findById(result.categoryId),
@@ -44,7 +45,8 @@ class PlaylistService {
 
   async getDetail(id) {
     try {
-      const result = await Playlist.findById(id).lean()
+      const result = await Playlist.findById(id).lean()     
+       if(!result) return null
       const [category, artist] = await Promise.all([
         Category.findById(result.categoryId),
         Artist.findById(result.artistId),

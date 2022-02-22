@@ -19,3 +19,11 @@ export const randomSong = (min, max, size) => {
 
   return [...result]
 }
+
+export const mapList = (list, key) => {
+  return list.reduce((current, value) => {
+    if(current) {
+      value.push(current[key])
+    }
+  }, [])
+}

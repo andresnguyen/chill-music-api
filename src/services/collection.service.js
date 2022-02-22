@@ -22,7 +22,7 @@ class CollectionService {
     try {
       const favoriteSongList = await FavoriteSong.find({
         userId: user._id,
-      })
+      }).sort({ createdAt: -1 })
 
       const result = await SongService.getSongFromArray(
         favoriteSongList.map((favoriteSong) => favoriteSong.songId)
@@ -68,7 +68,7 @@ class CollectionService {
 
       const playlistList = await Playlist.find({
         _id: { $in: favoritePlaylistList.map((favoritePlaylist) => favoritePlaylist.playlistId) },
-      })
+      }).sort({ createdAt: -1 })
       return playlistList
     } catch (error) {
       throw error
@@ -118,7 +118,7 @@ class CollectionService {
     try {
       const playlistList = await Playlist.find({
         userId: user._id,
-      })
+      }).sort({ createdAt: -1 })
 
       return playlistList
     } catch (error) {
@@ -180,8 +180,7 @@ class CollectionService {
         throw new createError.BadRequest(
           `Playlist not exists in current user's playlist or playlist is invalid`
         )
-      }
-
+      } 
       return true
     } catch (error) {
       throw error
@@ -239,11 +238,12 @@ class CollectionService {
     try {
       const favoriteAlbumList = await FavoriteAlbum.find({
         userId: user._id,
-      })
+      }).sort({ createdAt: -1 })
 
       const playlistList = await AlbumService.getAlbumFromArray(
         favoriteAlbumList.map((favoriteAlbum) => favoriteAlbum.albumId)
       )
+
       return playlistList
     } catch (error) {
       throw error
@@ -294,11 +294,12 @@ class CollectionService {
     try {
       const favoriteArtistList = await FavoriteArtist.find({
         userId: user._id,
-      })
+      }).sort({ createdAt: -1 })
 
       const artistList = await ArtistService.getArtistFromArray(
         favoriteArtistList.map((favoriteArtist) => favoriteArtist.artistId)
       )
+
       return artistList
     } catch (error) {
       throw error

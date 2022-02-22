@@ -44,7 +44,7 @@ class SongController {
   async delete(req, res, next) {
     const id = req.params.id
     try {
-      const data = await SongService.deleteSoft(id)
+      const data = await SongService.delete(id)
       res.status(OK).json({ ...singleResponse, data })
     } catch (error) {
       res.status(error.statusCode || INTERNAL_SERVER).json({
