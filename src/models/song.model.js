@@ -28,6 +28,11 @@ const songSchema = new mongoose.Schema(
       min: 0,
       default: 0,
     },
+    time: {
+      type: Number,
+      min: 0,
+      default: null,
+    },
     artistList: {
       type: Array,
       default: []

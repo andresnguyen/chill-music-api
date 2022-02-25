@@ -55,7 +55,7 @@ class AlbumController {
   async delete(req, res, next) {
     const id = req.params.id
     try {
-      const data = await AlbumService.findByIdAndDelete(id)
+      const data = await AlbumService.delete(id)
       res.status(OK).json({ ...singleResponse, data })
     } catch (error) {
       next(error)

@@ -5,6 +5,10 @@ const userAPI = {
     const url = '/users';
     return axiosClient.get(url, { params });
   },
+  getById(id) {
+    const url = `/users/${id}`;
+    return axiosClient.get(url);
+  },
   count() {
     const url = '/users/count';
     return axiosClient.get(url);

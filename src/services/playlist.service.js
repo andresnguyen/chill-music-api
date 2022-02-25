@@ -83,6 +83,7 @@ class PlaylistService {
   }
 
   async delete(id) {
+    console.log(id)
     try {
       const result = await Playlist.findByIdAndDelete(id)
       return result

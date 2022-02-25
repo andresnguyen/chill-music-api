@@ -4,6 +4,7 @@ import songRoute from './song.route'
 import playlistRoute from './playlist.route'
 import albumRoute from './album.route'
 import artistRoute from './artist.route'
+import commentRoute from './comment.route'
 import categoryRoute from './category.route'
 import collectionRoute from './collection.route'
 import authRoute from './auth.route'
@@ -16,6 +17,7 @@ function route(app) {
   app.use('/v1/playlists', playlistRoute)
   app.use('/v1/albums', albumRoute)
   app.use('/v1/artists', artistRoute)
+  app.use('/v1/comments', commentRoute)
   app.use('/v1/categories', categoryRoute)
   app.use('/v1', siteRoute)
 }

@@ -31,6 +31,36 @@ class SongService {
     }
   }
 
+  async getRecommend(categoryId) {
+    try {
+      let data = await Song.find({
+        categoryId,
+      })
+        .sort({
+          view: -1,
+        })
+        .limit(10)
+        .lean()
+
+      data = await this.getSongFromArraySong(data)
+
+      return data
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async updateView(songId) {
+    try {
+      const song = await Song.findById(songId)
+      song.view = song.view + 1
+      await song.save()
+      return song.view
+    } catch (error) {
+      throw error
+    }
+  }
+
   async getById(songId) {
     try {
       const result = await Song.findById(songId).lean()
@@ -54,7 +84,7 @@ class SongService {
   }
 
   async getBySong(song) {
-    if(!song) return null
+    if (!song) return null
     try {
       const [artistList, category] = await Promise.all([
         Artist.find({ _id: { $in: song.artistList } }),
@@ -156,6 +186,41 @@ class SongService {
       if (songList.length === 0) return []
 
       const result = await this.getSongFromArraySong(songList)
+      return result
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async songStatistic() {
+    try {
+      const data = await Song.find({
+        createdAt: {
+          $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+        },
+      }).lean()
+
+      let initValue = {}
+
+      for (let i = 0; i < 7; i++) {
+        const date = new Date(Date.now() - i * 24 * 60 * 60 * 1000)
+        initValue[`${date.getDate()}/${date.getMonth() + 1}`] = 0
+      }
+
+      const result = data.reduce((value, current) => {
+        if (!current.createdAt) return value
+
+        const data = `${new Date(current.createdAt).getDate()}/${
+          new Date(current.createdAt).getMonth() + 1
+        }`
+        if (value[data]) {
+          value[data] = value[data] + 1
+        } else {
+          value[data] = 1
+        }
+        return value
+      }, initValue)
+
       return result
     } catch (error) {
       throw error
