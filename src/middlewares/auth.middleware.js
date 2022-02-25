@@ -1,6 +1,4 @@
 import createError from 'http-errors'
-import { UNAUTHORIZED } from '../constants/httpStatusCode.constant'
-import privateRoutes from '../constants/privateRoutes'
 import { verifyAccessToken } from '../utils/auth'
 
 class AuthMiddleware {
@@ -26,14 +24,6 @@ class AuthMiddleware {
       next()
     } catch (error) {
       next()
-      return
-      privateRoutes.forEach((privateRoute) => {
-        if (req.originalUrl.indexOf(privateRoute) === 4) {
-          error.status = error.status || UNAUTHORIZED
-          next(error)
-          return
-        }
-      })
     }
   }
 
@@ -46,6 +36,14 @@ class AuthMiddleware {
     } catch (error) {
       next(error)
     }
+  }
+
+  async checkLogin(req, res, next) {
+    if (!req.user) {
+      next(createError.Unauthorized('Unauthorized'))
+      return
+    }
+    next()
   }
 }
 

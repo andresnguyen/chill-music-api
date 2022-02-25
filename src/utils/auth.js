@@ -25,4 +25,3 @@ export const verifyAccessToken = async (token) => {
   const { user } = await jwt.verify(token, ACCESS_TOKEN_SECRET)
   return user
 }
-

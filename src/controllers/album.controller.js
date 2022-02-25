@@ -2,7 +2,6 @@ import { OK } from '../constants/httpStatusCode.constant'
 import { pluralResponse, singleResponse } from '../constants/response.constant'
 import AlbumService from '../services/album.service'
 
-
 class AlbumController {
   async getAll(req, res, next) {
     try {
@@ -17,16 +16,6 @@ class AlbumController {
     const id = req.params.id
     try {
       const data = await AlbumService.getById(id)
-      return res.status(OK).json({ ...singleResponse, data })
-    } catch (error) {
-      next(error)
-    }
-  }
-
-  async getDetail(req, res, next) {
-    const id = req.params.id
-    try {
-      const data = await AlbumService.getDetail(id)
       return res.status(OK).json({ ...singleResponse, data })
     } catch (error) {
       next(error)
@@ -57,6 +46,16 @@ class AlbumController {
     try {
       const data = await AlbumService.delete(id)
       res.status(OK).json({ ...singleResponse, data })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async getDetail(req, res, next) {
+    const id = req.params.id
+    try {
+      const data = await AlbumService.getDetail(id)
+      return res.status(OK).json({ ...singleResponse, data })
     } catch (error) {
       next(error)
     }

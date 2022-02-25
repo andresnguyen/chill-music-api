@@ -23,4 +23,3 @@ const recentSongSchema = new mongoose.Schema(
 )
 
 export default mongoose.model('recent-song', recentSongSchema, 'recent-song')
-  

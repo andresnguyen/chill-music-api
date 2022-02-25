@@ -4,12 +4,15 @@ import Category from '../models/category.model'
 import SongService from './song.service'
 
 class AlbumService {
-  async getAll({ page = 1, limit = 20, q = '', categoryId, noArtist }) {
+  async getAll({ page = 1, limit = 20, q = '', categoryId, artistId, isActive, noArtist }) {
     page = Number.parseInt(page) - 1
     limit = Number.parseInt(limit)
     const query = q ? { name: new RegExp(q, 'i') } : {}
-    if (categoryId) query.categoryId = categoryId.toString()
+
     try {
+      if (categoryId) query.categoryId = categoryId.toString()
+      if (artistId) query.artistId = artistId
+      if (isActive) query.isActive = isActive === 'false' ? false : true
       const [data, count] = await Promise.all([
         Album.find(query)
           .skip(page * limit)
@@ -21,36 +24,6 @@ class AlbumService {
       const result = await Promise.all(data.map((item) => this.getByItem(item, noArtist)))
 
       return { data: result, pagination: { page, limit, count } }
-    } catch (error) {
-      throw error
-    }
-  }
-
-  async getByItem(item, noArtist) {
-    if(!item) return null
-    const promiseList = noArtist
-      ? [Category.findById(item.categoryId), Artist.findById(item.artistId)]
-      : [
-          Category.findById(item.categoryId),
-          Artist.findById(item.artistId),
-          SongService.getSongFromArray(item.songList),
-        ]
-    try {
-      const [category, artist, songList] = await Promise.all(promiseList)
-
-      if (noArtist)
-        return {
-          ...item,
-          category,
-          artist,
-        }
-
-      return {
-        ...item,
-        songList,
-        category,
-        artist,
-      }
     } catch (error) {
       throw error
     }
@@ -74,31 +47,6 @@ class AlbumService {
     } catch (error) {
       throw error
     }
-  }
-
-  async getDetail(id) {
-    try {
-      const result = await Album.findById(id).lean()
-      if(!result) return null
-      const [category, artist] = await Promise.all([
-        Category.findById(result.categoryId),
-        Artist.findById(result.artistId),
-      ])
-
-      return {
-        ...result,
-        category,
-        artist,
-      }
-    } catch (error) {
-      throw error
-    }
-  }
-
-  async getAlbumFromArray(albumIdList) {
-    const result = await Promise.all(albumIdList.map((albumId) => this.getById(albumId)))
-    
-    return result.filter((item) => Boolean(item))
   }
 
   async create(data) {
@@ -128,6 +76,62 @@ class AlbumService {
     } catch (error) {
       throw error
     }
+  }
+
+  async getDetail(id) {
+    try {
+      const result = await Album.findById(id).lean()
+      if (!result) return null
+      const [category, artist] = await Promise.all([
+        Category.findById(result.categoryId),
+        Artist.findById(result.artistId),
+      ])
+
+      return {
+        ...result,
+        category,
+        artist,
+      }
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async getByItem(item, noArtist) {
+    if (!item) return null
+
+    const promiseList = noArtist
+      ? [Category.findById(item.categoryId), Artist.findById(item.artistId)]
+      : [
+          Category.findById(item.categoryId),
+          Artist.findById(item.artistId),
+          SongService.getSongFromArray(item.songList),
+        ]
+    try {
+      const [category, artist, songList] = await Promise.all(promiseList)
+
+      if (noArtist)
+        return {
+          ...item,
+          category,
+          artist,
+        }
+
+      return {
+        ...item,
+        songList,
+        category,
+        artist,
+      }
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async getAlbumFromArray(albumIdList) {
+    const result = await Promise.all(albumIdList.map((albumId) => this.getById(albumId)))
+
+    return result.filter((item) => Boolean(item))
   }
 }
 

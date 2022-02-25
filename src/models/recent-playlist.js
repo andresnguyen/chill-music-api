@@ -23,4 +23,3 @@ const recentPlaylistSchema = new mongoose.Schema(
 )
 
 export default mongoose.model('recent-playlist', recentPlaylistSchema, 'recent-playlist')
-  

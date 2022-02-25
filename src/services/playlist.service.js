@@ -4,12 +4,13 @@ import Artist from '../models/artist.model'
 import SongService from '../services/song.service'
 
 class PlaylistService {
-  async getAll({ page = 1, limit = 20, q = '', categoryId }) {
+  async getAll({ page = 1, limit = 20, q = '', categoryId, isActive }) {
     page = Number.parseInt(page) - 1
     limit = Number.parseInt(limit)
     const query = q ? { name: new RegExp(q, 'i') } : {}
-    if (categoryId) query.categoryId = categoryId
     try {
+      if (categoryId) query.categoryId = categoryId
+      if (isActive) query.isActive = isActive === 'false' ? false : true
       const [data, count] = await Promise.all([
         Playlist.find(query)
           .skip(page * limit)
@@ -26,7 +27,7 @@ class PlaylistService {
   async getById(id) {
     try {
       const result = await Playlist.findById(id).lean()
-      if(!result) return null
+      if (!result) return null
       const [songList, category, artist] = await Promise.all([
         SongService.getSongFromArray(result.songList),
         Category.findById(result.categoryId),
@@ -45,8 +46,8 @@ class PlaylistService {
 
   async getDetail(id) {
     try {
-      const result = await Playlist.findById(id).lean()     
-       if(!result) return null
+      const result = await Playlist.findById(id).lean()
+      if (!result) return null
       const [category, artist] = await Promise.all([
         Category.findById(result.categoryId),
         Artist.findById(result.artistId),

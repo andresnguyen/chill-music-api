@@ -5,12 +5,13 @@ import SongService from './song.service'
 import FavoriteArtist from '../models/favorite-artist.model'
 
 class ArtistService {
-  async getAll({ page = 1, limit = 20, q = '', categoryId }) {
+  async getAll({ page = 1, limit = 20, q = '', categoryId, gender }) {
     page = Number.parseInt(page) - 1
     limit = Number.parseInt(limit)
     const query = q ? { fullName: new RegExp(q, 'i') } : {}
-    if (categoryId) query.categoryId = categoryId
     try {
+      if (categoryId) query.categoryId = categoryId
+      if (gender) query.gender = Number(gender)
       const [data, count] = await Promise.all([
         Artist.find(query)
           .skip(page * limit)
@@ -28,7 +29,7 @@ class ArtistService {
   async getById(id) {
     try {
       const result = await Artist.findById(id).lean()
-      if(!result) return null
+      if (!result) return null
       const [category, favoriteNumber] = await Promise.all([
         Category.findById(result.categoryId),
         FavoriteArtist.find({
@@ -84,20 +85,11 @@ class ArtistService {
     }
   }
 
-  async getArtistFromArray(artistIdList) {
-    try {
-      const result = await Promise.all(artistIdList.map((artistId) => this.getById(artistId)))
-      return result.filter((item) => Boolean(item))
-    } catch (error) {
-      throw error
-    }
-  }
-
   async getDetail(id) {
     try {
       const artist = await this.getById(id)
 
-      if(!artist) return null
+      if (!artist) return null
 
       const [songList, albumList, artistList, favoriteNumber] = await Promise.all([
         SongService.getSongByArtistID(artist._id.toString()),
@@ -119,6 +111,15 @@ class ArtistService {
         artistList,
         favoriteNumber,
       }
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async getArtistFromArray(artistIdList) {
+    try {
+      const result = await Promise.all(artistIdList.map((artistId) => this.getById(artistId)))
+      return result.filter((item) => Boolean(item))
     } catch (error) {
       throw error
     }

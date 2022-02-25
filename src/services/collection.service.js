@@ -102,7 +102,7 @@ class CollectionService {
         userId: user._id,
         playlistId,
       })
-      
+
       if (!favoritePlaylist) {
         throw new createError.BadRequest('This playlist does not exist in your album list')
       }
@@ -180,7 +180,7 @@ class CollectionService {
         throw new createError.BadRequest(
           `Playlist not exists in current user's playlist or playlist is invalid`
         )
-      } 
+      }
       return true
     } catch (error) {
       throw error

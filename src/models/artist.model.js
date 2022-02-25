@@ -1,4 +1,3 @@
-
 const mongoose = require('mongoose')
 
 // nếu ở schema không có một thuộc tính bất kì, nhưng ở trên db thì có sẽ

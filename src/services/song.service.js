@@ -4,14 +4,16 @@ import createError from 'http-errors'
 import Category from '../models/category.model'
 
 class SongService {
-  async getAll({ page = 1, limit = 20, q = '', categoryId, select }) {
+  async getAll({ page = 1, limit = 20, q = '', categoryId, artistId, isActive, select }) {
     page = Number.parseInt(page) - 1
     limit = Number.parseInt(limit)
     const query = q ? { name: new RegExp(q, 'i') } : {}
 
-    if (categoryId) query.categoryId = categoryId
-
     try {
+      if (categoryId) query.categoryId = categoryId
+      if (artistId) query.artistList = artistId
+      if (isActive) query.isActive = isActive === 'false' ? false : true
+
       let [data, count] = await Promise.all([
         Song.find(query)
           .skip(page * limit)

@@ -1,4 +1,3 @@
-
 const mongoose = require('mongoose')
 
 const albumSchema = new mongoose.Schema(
@@ -57,4 +56,3 @@ const albumSchema = new mongoose.Schema(
 )
 
 export default mongoose.model('album', albumSchema, 'album')
-

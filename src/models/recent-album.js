@@ -23,4 +23,3 @@ const recentAlbumSchema = new mongoose.Schema(
 )
 
 export default mongoose.model('recent-album', recentAlbumSchema, 'recent-album')
-  

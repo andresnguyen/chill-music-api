@@ -22,35 +22,6 @@ class SongController {
     }
   }
 
-  async getRecommend(req, res, next) {
-    const categoryId = req.params.categoryId
-    try {
-      const data = await SongService.getRecommend(categoryId)
-      return res.status(OK).json({ ...pluralResponse, data })
-    } catch (error) {
-      next(error)
-    }
-  }
-
-  async updateView(req, res, next) {
-    const id = req.params.id
-    try {
-      const data = await SongService.updateView(id)
-      return res.status(OK).json({ ...singleResponse, data })
-    } catch (error) {
-      next(error)
-    }
-  }
-
-  async songStatistic(req, res, next) {
-    try {
-      const data = await SongService.songStatistic()
-      return res.status(OK).json({ ...singleResponse, data })
-    } catch (error) {
-      next(error)
-    }
-  }
-
   async create(req, res, next) {
     try {
       const data = await SongService.create({ ...req.body, userId: req.user._id })
@@ -80,6 +51,35 @@ class SongController {
         ...failedResponse,
         message: error.message,
       })
+    }
+  }
+
+  async getRecommend(req, res, next) {
+    const categoryId = req.params.categoryId
+    try {
+      const data = await SongService.getRecommend(categoryId)
+      return res.status(OK).json({ ...pluralResponse, data })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async updateView(req, res, next) {
+    const id = req.params.id
+    try {
+      const data = await SongService.updateView(id)
+      return res.status(OK).json({ ...singleResponse, data })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async songStatistic(req, res, next) {
+    try {
+      const data = await SongService.songStatistic()
+      return res.status(OK).json({ ...singleResponse, data })
+    } catch (error) {
+      next(error)
     }
   }
 

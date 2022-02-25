@@ -1,4 +1,3 @@
-
 const mongoose = require('mongoose')
 
 const songSchema = new mongoose.Schema(
@@ -35,7 +34,7 @@ const songSchema = new mongoose.Schema(
     },
     artistList: {
       type: Array,
-      default: []
+      default: [],
     },
     categoryId: {
       type: String,
