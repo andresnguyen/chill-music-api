@@ -13,6 +13,8 @@ import RecentSong from '../models/recent-song'
 import RecentPlaylist from '../models/recent-playlist'
 import RecentAlbum from '../models/recent-album'
 import FavoriteArtist from '../models/favorite-artist.model'
+import FavoriteSong from '../models/favorite-song.model'
+import FavoriteAlbum from '../models/favorite-album.model'
 
 class SiteService {
   async getTopFavoriteArtist() {
@@ -33,12 +35,91 @@ class SiteService {
           artist: await Artist.findById(item.artistId).lean(),
         }))
       )
+
       return result
     } catch (error) {
       throw error
     }
   }
-  
+
+  async loginHome(user) {
+    // category favorite song
+    // category favorite album
+    // category recent song
+    // category react album
+
+    const titleList = [
+      'Có thể bạn muốn nghe',
+      'Nhạc mới phát hành',
+      'Lựa chọn hôm nay',
+      'Mới phát hành',
+    ]
+
+    try {
+      let [songList, albumList, recentSongList, recentAlbumList] = await Promise.all([
+        FavoriteSong.find({ userId: user._id }).select('songId -_id'),
+        FavoriteAlbum.find({ userId: user._id }).select('albumId -_id'),
+        RecentSong.find({ userId: user._id }).select('songId -_id'),
+        RecentAlbum.find({ userId: user._id }).select('albumId -_id'),
+      ])
+
+      let result = await Promise.all([
+        Song.find({
+          _id: { $in: [songList, recentSongList].flat().map((item) => item.songId) },
+        }).select('categoryId -_id'),
+        Album.find({
+          _id: { $in: [albumList, recentAlbumList].flat().map((item) => item.albumId) },
+        }).select('categoryId -_id'),
+      ])
+
+      result = result.flat().map((item) => item.categoryId)
+
+      const recommend = result.reduce((value, current) => {
+        if (value[current]) {
+          value[current] = value[current] + 1
+        } else {
+          value[current] = 1
+        }
+
+        return value
+      }, {})
+
+      let key = ''
+      let count = 0
+
+      for (let recommendKey in recommend) {
+        if (recommend[recommendKey] > count) {
+          count = recommend[recommendKey]
+          key = recommendKey
+        }
+      }
+
+      const [songResultList, albumResultList, artistResultList] = await Promise.all([
+        SongService.getAll({ categoryId: key }),
+        AlbumService.getAll({ categoryId: key }),
+        ArtistService.getAll({ categoryId: key }),
+      ])
+
+      return [
+        {
+          title: 'Bài hát cho bạn',
+          data: songResultList.data,
+        },
+        {
+          title: 'Danh sách phát cho bạn',
+          data: albumResultList.data,
+        },
+        {
+          title: 'Nghệ sĩ có thể bạn thích?',
+          data: artistResultList.data,
+        },
+      ]
+    } catch (error) {
+      console.log(error)
+      throw error
+    }
+  }
+
   async home() {
     const titleList = [
       'Có thể bạn muốn nghe',

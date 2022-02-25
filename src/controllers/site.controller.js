@@ -4,7 +4,7 @@ import SiteService from '../services/site.service'
 class SiteController {
   async home(req, res, next) {
     try {
-      const data = await SiteService.home()
+      const data = req.user ? await SiteService.loginHome(req.user) : await SiteService.home()
       return res.status(OK).json({ ...pluralResponse, data })
     } catch (error) {
       next(error)
