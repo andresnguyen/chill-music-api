@@ -5,13 +5,15 @@ import SongService from './song.service'
 import FavoriteArtist from '../models/favorite-artist.model'
 
 class ArtistService {
-  async getAll({ page = 1, limit = 20, q = '', categoryId, gender }) {
+  async getAll({ page = 1, limit = 20, q = '', categoryId, gender, isActive }) {
     page = Number.parseInt(page) - 1
     limit = Number.parseInt(limit)
     const query = q ? { fullName: new RegExp(q, 'i') } : {}
     try {
       if (categoryId) query.categoryId = categoryId
       if (gender) query.gender = Number(gender)
+      if (isActive) query.isActive = isActive === 'false' ? false : true
+
       const [data, count] = await Promise.all([
         Artist.find(query)
           .skip(page * limit)

@@ -1,11 +1,12 @@
 import Category from '../models/category.model'
 
 class CategoryService {
-  async getAll({ page = 1, limit = 20, q = '' }) {
+  async getAll({ page = 1, limit = 20, q = '', isActive }) {
     page = Number.parseInt(page) - 1
     limit = Number.parseInt(limit)
     const query = q ? { name: new RegExp(q, 'i') } : {}
     try {
+      if (isActive) query.isActive = isActive === 'false' ? false : true
       const data = await Category.find(query)
         .skip(page * limit)
         .limit(limit)
