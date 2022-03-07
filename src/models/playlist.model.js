@@ -29,6 +29,10 @@ const playlistSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    type: {
+      type: Number,
+      default: 2,
+    },
     view: {
       type: Number,
       min: 0,

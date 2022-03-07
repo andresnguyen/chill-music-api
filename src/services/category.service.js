@@ -10,7 +10,9 @@ class CategoryService {
       const data = await Category.find(query)
         .skip(page * limit)
         .limit(limit)
+        .sort({ createdAt: -1 })
         .lean()
+        
       const count = await Category.find(query).count()
       return { data, pagination: { page, limit, count } }
     } catch (error) {

@@ -3,6 +3,7 @@ import Artist from '../models/artist.model'
 import Category from '../models/category.model'
 import SongService from './song.service'
 import FavoriteArtist from '../models/favorite-artist.model'
+import AlbumService from './album.service'
 
 class ArtistService {
   async getAll({ page = 1, limit = 20, q = '', categoryId, gender, isActive }) {
@@ -18,6 +19,7 @@ class ArtistService {
         Artist.find(query)
           .skip(page * limit)
           .limit(limit)
+          .sort({ createdAt: -1 })
           .lean(),
         Artist.find(query).count(),
       ])
@@ -95,9 +97,7 @@ class ArtistService {
 
       const [songList, albumList, artistList, favoriteNumber] = await Promise.all([
         SongService.getSongByArtistID(artist._id.toString()),
-        Album.find({
-          artistId: artist._id.toString(),
-        }),
+        AlbumService.getAll({ artistId: artist._id.toString() }),
         Artist.find({
           categoryId: artist.categoryId,
         }).limit(5),
@@ -109,7 +109,7 @@ class ArtistService {
       return {
         ...artist,
         songList,
-        albumList,
+        albumList: albumList.data,
         artistList,
         favoriteNumber,
       }

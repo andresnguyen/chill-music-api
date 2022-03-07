@@ -40,6 +40,10 @@ const songSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    type: {
+      type: Number,
+      default: 2,
+    },
     userId: {
       type: String,
       default: null,

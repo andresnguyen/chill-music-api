@@ -48,13 +48,6 @@ class SiteService {
     // category recent song
     // category react album
 
-    const titleList = [
-      'Có thể bạn muốn nghe',
-      'Nhạc mới phát hành',
-      'Lựa chọn hôm nay',
-      'Mới phát hành',
-    ]
-
     try {
       let [songList, albumList, recentSongList, recentAlbumList] = await Promise.all([
         FavoriteSong.find({ userId: user._id }).select('songId -_id'),
@@ -95,7 +88,7 @@ class SiteService {
       }
 
       const [songResultList, albumResultList, artistResultList] = await Promise.all([
-        SongService.getAll({ categoryId: key }),
+        SongService.getAll({ categoryId: '61f0b8b99b16ef39e2f3675c' }),
         AlbumService.getAll({ categoryId: key }),
         ArtistService.getAll({ categoryId: key }),
       ])

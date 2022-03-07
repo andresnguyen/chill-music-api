@@ -43,6 +43,7 @@ class UserService {
   }
 
   async update(id, data) {
+    console.log(data.dateOfBirth)
     try {
       if (data.dateOfBirth) {
         data.dateOfBirth = toDate(data.dateOfBirth)
